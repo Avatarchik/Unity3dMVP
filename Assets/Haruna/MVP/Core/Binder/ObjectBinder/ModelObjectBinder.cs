@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Haruna.UnityMVP.Model
 {
-	public class CsObjectBinder : MonoBehaviour, IMvpObjectBinder
+	public class ModelObjectBinder : MonoBehaviour, IMvpObjectBinder
 	{
 		[SerializeField]
 		protected string _modelTypeString;

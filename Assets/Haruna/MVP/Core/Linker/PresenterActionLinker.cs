@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Haruna.UnityMVP.Presenter
 {
-	public class PresenterLinker : MonoBehaviour
+	public class PresenterActionLinker : MonoBehaviour
 	{
 		[SerializeField]
 		string _url;
@@ -20,7 +20,7 @@ namespace Haruna.UnityMVP.Presenter
 		public void SendRequest()
 		{
 			var toSendData = _toSendDataBinders.Select(b => BinderUtil.GetValueFromBinder(b));
-			var res = PresenterDispatcher.GetInstance().RequestWithJTokens(_url, toSendData.ToArray());
+			var res = PresenterDispatcher.GetInstance().RequestWithMTokens(_url, toSendData.ToArray());
 			if(res.StatusCode == 200)
 			{
 				if(res.Data != null)

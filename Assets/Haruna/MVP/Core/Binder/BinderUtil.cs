@@ -100,13 +100,13 @@ namespace Haruna.UnityMVP.Model
 			{
 				temp.InterfaceType = typeof(IMvpObjectBinder);
 				temp.TokenType = MTokenType.Object;
-				temp.ValueTypeName = "object";
+				temp.ValueTypeName = string.Format("object({0})", temp.ValueType.Name);
 			}
 			else
 			{
 				temp.InterfaceType = typeof(IMvpCustomTypeBinder<>).MakeGenericType(temp.ValueType);
 				temp.TokenType = MTokenType.Custom;
-				temp.ValueTypeName = temp.ValueType.Name;
+				temp.ValueTypeName = string.Format("custom({0})", temp.ValueType.Name); ;
 			}
 
 			return temp;

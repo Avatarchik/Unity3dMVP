@@ -8,8 +8,8 @@ using System.Collections;
 
 namespace Haruna.UnityMVP.Model
 {
-	[CustomEditor(typeof(CsObjectBinder), true)]
-	public class CsObjectBinderEditor : Editor
+	[CustomEditor(typeof(ModelObjectBinder), true)]
+	public class ModelObjectBinderEditor : Editor
 	{
 		SerializedProperty _modelTypeProperty;
 		SerializedProperty _bindersProperty;
@@ -74,12 +74,12 @@ namespace Haruna.UnityMVP.Model
 
 		void DrawSerializeFields(Type modelType)
 		{
-			var beforeSerializedValues = new Dictionary<string, CsObjectBinder.SerializedBinder>();
+			var beforeSerializedValues = new Dictionary<string, ModelObjectBinder.SerializedBinder>();
 			
 			for (var i = 0; i < _bindersProperty.arraySize; i++)
 			{
 				var element = _bindersProperty.GetArrayElementAtIndex(i);
-				var value = new CsObjectBinder.SerializedBinder()
+				var value = new ModelObjectBinder.SerializedBinder()
 				{
 					FieldName = element.FindPropertyRelative("FieldName").stringValue,
 					ManualInput = element.FindPropertyRelative("ManualInput").boolValue,
@@ -90,16 +90,16 @@ namespace Haruna.UnityMVP.Model
 					beforeSerializedValues.Add(value.FieldName, value);
 			}
 
-			var afterSerializedValues = new List<CsObjectBinder.SerializedBinder>();
+			var afterSerializedValues = new List<ModelObjectBinder.SerializedBinder>();
 			//var afterSerializedValues = new Dictionary<string, UnityEngine.Object>();
 			var toSerializeMembers = BinderUtil.GetRequireBinderInfoFromModelMembers(modelType);
 			foreach (var member in toSerializeMembers)
 			{
 				var fieldName = member.Key;
-				CsObjectBinder.SerializedBinder binderInfo;
+				ModelObjectBinder.SerializedBinder binderInfo;
 				if (!beforeSerializedValues.TryGetValue(fieldName, out binderInfo))
 				{
-					binderInfo = new CsObjectBinder.SerializedBinder()
+					binderInfo = new ModelObjectBinder.SerializedBinder()
 					{
 						FieldName = fieldName,
 						ManualInput = false,

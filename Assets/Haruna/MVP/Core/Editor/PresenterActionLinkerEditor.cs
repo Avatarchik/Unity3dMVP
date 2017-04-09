@@ -7,10 +7,10 @@ using UnityEngine;
 
 namespace Haruna.UnityMVP.Presenter
 {
-	[CustomEditor(typeof(PresenterLinker), true)]
-	public class PresenterLinkerEditor : Editor
+	[CustomEditor(typeof(PresenterActionLinker), true)]
+	public class PresenterActionLinkerEditor : Editor
 	{
-		List<PresenterAction> _allActions;
+		List<PresenterActionInfo> _allActions;
 		List<string> _urls;
 
 		void OnEnable()
@@ -21,13 +21,23 @@ namespace Haruna.UnityMVP.Presenter
 
 		public override void OnInspectorGUI()
 		{
+			if(_urls.Count == 0)
+			{
+				EditorGUILayout.HelpBox("Action is not exist!", MessageType.Info);
+				return;
+			}
+
 			var urlProp = serializedObject.FindProperty("_url");
 			int index = 0;
 			if (!string.IsNullOrEmpty(urlProp.stringValue))
 				index = _urls.FindIndex(u => u == urlProp.stringValue);
 			if (index < 0)
 			{
-				EditorGUILayout.HelpBox("action is not exist!\n" + urlProp.stringValue, MessageType.Error);
+				EditorGUILayout.HelpBox("Action is deleted or changed its name.\n" + urlProp.stringValue, MessageType.Error);
+				if (GUILayout.Button("Reset"))
+				{
+					urlProp.stringValue = "";
+				}
 			}
 			else
 			{
@@ -43,7 +53,7 @@ namespace Haruna.UnityMVP.Presenter
 			serializedObject.ApplyModifiedProperties();
 		}
 
-		void DrawParameters(PresenterAction action)
+		void DrawParameters(PresenterActionInfo action)
 		{
 			EditorGUILayout.LabelField("Parameters");
 			EditorGUI.indentLevel++;
@@ -52,7 +62,6 @@ namespace Haruna.UnityMVP.Presenter
 			if (parameters.Length == 0)
 			{
 				EditorGUILayout.HelpBox("No parameter to send", MessageType.Info);
-				return;
 			}
 			else
 			{
@@ -79,7 +88,7 @@ namespace Haruna.UnityMVP.Presenter
 			EditorGUI.indentLevel--;
 		}
 
-		void DrawResponse(PresenterAction action)
+		void DrawResponse(PresenterActionInfo action)
 		{
 			EditorGUILayout.LabelField("Responese");
 			EditorGUI.indentLevel++;
@@ -101,7 +110,7 @@ namespace Haruna.UnityMVP.Presenter
 				{
 					var binderInfo = BinderUtil.GetRequireBinderInfoByValueType(retType);
 					binderProperty.objectReferenceValue = EditorKit.DrawBinderField(
-						"Return Value", binderInfo.ValueTypeName, binderProperty.objectReferenceValue, retType);
+						"Return Value", binderInfo.ValueTypeName, binderProperty.objectReferenceValue, binderInfo.InterfaceType);
 				}
 			}
 			EditorGUI.indentLevel--;

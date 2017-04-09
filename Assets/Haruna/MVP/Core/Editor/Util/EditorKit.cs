@@ -35,10 +35,13 @@ namespace Haruna.UnityMVP
 		
 		public static UnityEngine.Object DrawBinderField(string label, string valueTypeName, UnityEngine.Object value, Type binderInterfaceType)
 		{
-			EditorGUILayout.BeginHorizontal();
 			EditorGUILayout.LabelField(label, valueTypeName);
+			EditorGUILayout.BeginHorizontal();
+			//EditorGUI.indentLevel++;
+			EditorGUILayout.PrefixLabel(" ");
 			var ret = DrawBinderField(value, binderInterfaceType);
 			EditorGUILayout.EndHorizontal();
+			//EditorGUI.indentLevel--;
 			return ret;
 		}
 
