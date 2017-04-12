@@ -12,11 +12,13 @@ namespace Haruna.UnityMVP.Presenter
 	{
 		List<PresenterActionInfo> _allActions;
 		List<string> _urls;
+		string[] _displayUrls;
 
 		void OnEnable()
 		{
 			_allActions = PresenterUtil.GetAllPresenterAction().Values.ToList();
 			_urls = _allActions.Select(a => a.Url).ToList();
+			_displayUrls = _allActions.Select(a => string.IsNullOrEmpty(a.DisplayUrl) ? a.Url : a.DisplayUrl).ToArray();
 		}
 
 		public override void OnInspectorGUI()
@@ -41,7 +43,7 @@ namespace Haruna.UnityMVP.Presenter
 			}
 			else
 			{
-				index = EditorGUILayout.Popup("Presenter", index, _urls.ToArray());
+				index = EditorGUILayout.Popup("Presenter", index, _displayUrls);
 				urlProp.stringValue = _urls[index];
 			}
 

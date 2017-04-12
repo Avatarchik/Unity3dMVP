@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Haruna.UnityMVP.Examples
 {
-	[MvpModel]
+	[MvpModel(DisplayName = "Examples/UserInfoModel")]
 	public class UserInfoModel
 	{
 		[ModelProperty]
@@ -16,9 +16,10 @@ namespace Haruna.UnityMVP.Examples
 		public Sprite Portrait { set; get; } 
 	}
 
-	[PresenterAction]
+	[Presenter]
 	public static class UserInfoPresenter
 	{
+		[PresenterAction(DisplayName = "Examples/UserInfo.GetUserInfo")]
 		public static UserInfoModel GetUserInfo(string uid)
 		{
 			var info = new UserInfoModel();

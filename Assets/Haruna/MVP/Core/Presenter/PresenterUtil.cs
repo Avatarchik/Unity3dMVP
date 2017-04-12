@@ -12,12 +12,14 @@ namespace Haruna.UnityMVP.Presenter
 	{
 		public string Url;
 		public Type PresenterType;
+		public string DisplayUrl;
 		public MethodInfo Method;
 	}
 	public class PresenterEventInfo
 	{
 		public string Url;
 		public Type PresenterType;
+		public string DisplayUrl;
 		public FieldInfo Field;
 	}
 
@@ -40,8 +42,7 @@ namespace Haruna.UnityMVP.Presenter
 				var types = assembly.GetTypes();
 				foreach (var type in types)
 				{
-					var attr = type.GetCustomAttributes(typeof(PresenterActionAttribute), true);
-					if (attr.Length == 0)
+					if (type.GetCustomAttributes(typeof(PresenterAttribute), true).Length == 0)
 						continue;
 
 					var presenterName = type.Name.EndsWith("Presenter") ?
@@ -49,9 +50,10 @@ namespace Haruna.UnityMVP.Presenter
 					var methods = type.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
 					foreach (var method in methods)
 					{
-						if (method.GetCustomAttributes(typeof(NonActionAttribute), true).Length != 0)
+						var actionAttrs = method.GetCustomAttributes(typeof(PresenterActionAttribute), true);
+						if (actionAttrs.Length == 0)
 							continue;
-
+						
 						var url = presenterName + "/" + method.Name;
 						if (_actionMapping.ContainsKey(url))
 						{
@@ -65,6 +67,7 @@ namespace Haruna.UnityMVP.Presenter
 							var actionInfo = new PresenterActionInfo()
 							{
 								Url = url,
+								DisplayUrl = ((PresenterActionAttribute)(actionAttrs[0])).DisplayName,
 								PresenterType = type,
 								Method = method
 							};
@@ -83,8 +86,7 @@ namespace Haruna.UnityMVP.Presenter
 				var types = assembly.GetTypes();
 				foreach (var type in types)
 				{
-					var attr = type.GetCustomAttributes(typeof(PresenterEventAttribute), true);
-					if (attr.Length == 0)
+					if (type.GetCustomAttributes(typeof(PresenterAttribute), true).Length == 0)
 						continue;
 
 					var presenterName = type.Name.EndsWith("Presenter") ?
@@ -93,8 +95,12 @@ namespace Haruna.UnityMVP.Presenter
 
 					foreach (var field in fields)
 					{
-						if(field.FieldType == typeof(PresenterEvent) || field.FieldType.IsSubclassOf(typeof(PresenterEvent)))
+						if (field.FieldType == typeof(PresenterEvent) || field.FieldType.IsSubclassOf(typeof(PresenterEvent)))
 						{
+							var eventAttrs = field.GetCustomAttributes(typeof(PresenterEventAttribute), true);
+							if (eventAttrs.Length == 0)
+								continue;
+							
 							var url = presenterName + "/" + field.Name;
 							if (_actionMapping.ContainsKey(url))
 							{
@@ -108,6 +114,7 @@ namespace Haruna.UnityMVP.Presenter
 								var eventInfo = new PresenterEventInfo()
 								{
 									Url = url,
+									DisplayUrl = ((PresenterEventAttribute)(eventAttrs[0])).DisplayName,
 									PresenterType = type,
 									Field = field
 								};

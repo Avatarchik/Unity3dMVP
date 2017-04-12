@@ -12,11 +12,13 @@ namespace Haruna.UnityMVP.Presenter
 	{
 		List<PresenterEventInfo> _allEvents;
 		List<string> _urls;
+		string[] _displayUrls;
 
 		void OnEnable()
 		{
 			_allEvents = PresenterUtil.GetAllPresetnerEvents().Values.ToList();
 			_urls = _allEvents.Select(a => a.Url).ToList();
+			_displayUrls = _allEvents.Select(a => string.IsNullOrEmpty(a.DisplayUrl) ? a.Url : a.DisplayUrl).ToArray();
 		}
 
 		int _selectedPageIndex;
@@ -55,7 +57,7 @@ namespace Haruna.UnityMVP.Presenter
 				}
 				else
 				{
-					index = EditorGUILayout.Popup("Presenter", index, _urls.ToArray());
+					index = EditorGUILayout.Popup("Presenter", index, _displayUrls);
 					urlProp.stringValue = _urls[index];
 				}
 

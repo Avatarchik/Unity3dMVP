@@ -25,13 +25,19 @@ namespace Haruna.UnityMVP.Model
 			var avaliableTypes = TypeUtil.GetAllTypes((t) =>
 			{
 				return t.GetCustomAttributes(typeof(MvpModelAttribute), true).Length != 0;
+			}).Select(t => new
+			{
+				Type = t,
+				DisplayName = ((MvpModelAttribute)t.GetCustomAttributes(typeof(MvpModelAttribute), true)[0]).DisplayName
 			});
 
 			_avaliableTypeStrings = avaliableTypes
-				.Select(t => TypeUtil.GetAssemblyTypeString(t))
+				.Select(t => TypeUtil.GetAssemblyTypeString(t.Type))
 				.OrderBy(s => s).ToList();
 
-			_avaliableDisplayTypeStrings = _avaliableTypeStrings.Select(t => t.Split(';')[0]).ToArray();
+			_avaliableDisplayTypeStrings = avaliableTypes.Select(
+				t => string.IsNullOrEmpty(t.DisplayName) ? TypeUtil.GetAssemblyTypeString(t.Type).Split(';')[0] : t.DisplayName)
+				.ToArray();
 		}
 
 		int _tempIndex;
