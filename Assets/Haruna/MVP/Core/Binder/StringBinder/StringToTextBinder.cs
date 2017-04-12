@@ -18,7 +18,10 @@ namespace Haruna.UnityMVP.Model
 
 		public void SetData(MString data)
 		{
-			_toBindText.text = data;
+			if (data == null)
+				_toBindText.text = "";
+			else
+				_toBindText.text = data;
 		}
 	}
 }

@@ -1,14 +1,15 @@
 ﻿using Haruna.UnityMVP.Model;
 using Haruna.UnityMVP.Presenter;
+using System;
 using UnityEngine;
 
 namespace Haruna.UnityMVP.Examples
 {
 	[MvpModel]
-	public class ToDisplayUserInfo
+	public class UserInfoModel
 	{
 		[ModelProperty]
-		public int UserId { set; get; }
+		public string UserId { set; get; }
 		[ModelProperty]
 		public string NickName { set; get; }
 		[ModelProperty]
@@ -18,13 +19,13 @@ namespace Haruna.UnityMVP.Examples
 	[PresenterAction]
 	public static class UserInfoPresenter
 	{
-		public static ToDisplayUserInfo GetUserInfo()
+		public static UserInfoModel GetUserInfo(string uid)
 		{
-			var info = new ToDisplayUserInfo();
-			info.UserId = 100;
+			var info = new UserInfoModel();
+			info.UserId = "uid : " + uid;
 			info.NickName = "John Smith";
-			info.Portrait = Resources.Load<Sprite>("");
-
+			info.Portrait = Resources.Load<Sprite>("UnityMVP_Example_Portrait");
+			
 			return info;
 		}
 	}

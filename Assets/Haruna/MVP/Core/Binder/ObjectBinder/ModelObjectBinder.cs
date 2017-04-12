@@ -19,32 +19,9 @@ namespace Haruna.UnityMVP.Model
 		}
 		[SerializeField]
 		List<SerializedBinder> _binders;
-
-		Type _modelType;
-		//Dictionary<string, ModelPropertyInfo> _modelMemberToBinderInfo;
-
-		void Awake()
-		{
-			_modelType = TypeUtil.GetTypeWithAssemblyTypeString(_modelTypeString);
-			if (_modelType == null)
-			{
-				Debug.LogErrorFormat(this, "can not get model type {0}", _modelTypeString);
-				return;
-			}
-
-			//if (_modelMemberToBinderInfo == null)
-			//	_modelMemberToBinderInfo = BinderUtil.GetRequireBinderInfoFromModelMembers(_modelType);
-		}
-
+		
 		public void SetData(MObject data)
 		{
-			if (_modelType != data.GetType())
-			{
-				Debug.LogErrorFormat(this,
-					"data type is not current. current {0} . expected {1}",
-					data.GetType().Name, _modelType.Name);
-			}
-
 			for (var i = 0; i < _binders.Count; i++)
 			{
 				var serializedBinder = _binders[i];
@@ -56,8 +33,6 @@ namespace Haruna.UnityMVP.Model
 				}
 
 				var value = data[serializedBinder.FieldName];
-				//var memberInfo = _modelType.GetMember(serializedBinder.FieldName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-				//var valueType = TypeUtil.GetFieldOrPropertyType(memberInfo);
 
 				BinderUtil.SetValueToBinder(value, serializedBinder.BinderInstance);
 			}
@@ -77,8 +52,6 @@ namespace Haruna.UnityMVP.Model
 				}
 				
 				obj.Add(serializedBinder.FieldName, BinderUtil.GetValueFromBinder(serializedBinder.BinderInstance));
-
-				//TypeUtil.SetValueFromFieldOrProperty(modelMember.MemberInfo, obj, value);
 			}
 			return obj;
 		}

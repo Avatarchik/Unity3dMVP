@@ -28,6 +28,9 @@ namespace Haruna.UnityMVP.Model
 		
 		public static MToken FromObject(object obj)
 		{
+			if (obj == null)
+				return null;
+
 			var type = obj.GetType();
 
 			if (type.IsPrimitive)

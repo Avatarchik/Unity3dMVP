@@ -114,8 +114,15 @@ namespace Haruna.UnityMVP.Model
 
 		public static void SetValueToBinder(MToken value, UnityEngine.Object binderObject)
 		{
-			var method = binderObject.GetType().GetMethod("SetData");
-			method.Invoke(binderObject, new object[] { value });
+			try
+			{
+				var method = binderObject.GetType().GetMethod("SetData");
+				method.Invoke(binderObject, new object[] { value });
+			}
+			catch (Exception e)
+			{
+				UnityEngine.Debug.LogException(e);
+			}
 		}
 
 		public static MToken GetValueFromBinder(UnityEngine.Object binderObject)

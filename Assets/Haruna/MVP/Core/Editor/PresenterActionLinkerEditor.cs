@@ -58,6 +58,7 @@ namespace Haruna.UnityMVP.Presenter
 			EditorGUILayout.LabelField("Parameters");
 			EditorGUI.indentLevel++;
 
+			var binderProperties = serializedObject.FindProperty("_toSendDataBinders");
 			var parameters = action.Method.GetParameters();
 			if (parameters.Length == 0)
 			{
@@ -65,7 +66,6 @@ namespace Haruna.UnityMVP.Presenter
 			}
 			else
 			{
-				var binderProperties = serializedObject.FindProperty("_toSendDataBinders");
 
 				for(var i = 0; i < parameters.Length; i++)
 				{
@@ -80,10 +80,10 @@ namespace Haruna.UnityMVP.Presenter
 					binderProperty.objectReferenceValue = EditorKit.DrawBinderField(
 						parameter.Name, requireBinderInfo.ValueTypeName, binderProperty.objectReferenceValue, requireBinderInfo.InterfaceType);
 				}
-				for(var i = parameters.Length; i < binderProperties.arraySize; i++)
-				{
-					binderProperties.DeleteArrayElementAtIndex(parameters.Length);
-				}
+			}
+			for (var i = parameters.Length; i < binderProperties.arraySize; i++)
+			{
+				binderProperties.DeleteArrayElementAtIndex(parameters.Length);
 			}
 			EditorGUI.indentLevel--;
 		}

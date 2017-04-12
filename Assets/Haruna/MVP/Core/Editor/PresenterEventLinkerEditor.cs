@@ -19,6 +19,7 @@ namespace Haruna.UnityMVP.Presenter
 			_urls = _allEvents.Select(a => a.Url).ToList();
 		}
 
+		int _selectedPageIndex;
 		public override void OnInspectorGUI()
 		{
 			if(_urls.Count == 0)
@@ -27,27 +28,41 @@ namespace Haruna.UnityMVP.Presenter
 				return;
 			}
 
-			var urlProp = serializedObject.FindProperty("_url");
-			int index = 0;
-			if (!string.IsNullOrEmpty(urlProp.stringValue))
-				index = _urls.FindIndex(u => u == urlProp.stringValue);
-			if (index < 0)
+			_selectedPageIndex = GUILayout.Toolbar(_selectedPageIndex, new string[] { "Settings", "Events" }, EditorStyles.miniButton);
+			EditorGUILayout.Space();
+			Rect rect = EditorGUILayout.GetControlRect(false, 1f);
+			EditorGUI.DrawRect(rect, EditorStyles.label.normal.textColor * 0.5f);
+			EditorGUILayout.Space();
+
+			if (_selectedPageIndex == 1)
 			{
-				EditorGUILayout.HelpBox("Event is deleted or changed its name.\n" + urlProp.stringValue, MessageType.Error);
-				if (GUILayout.Button("Reset"))
-				{
-					urlProp.stringValue = "";
-				}
+				EditorGUILayout.PropertyField(serializedObject.FindProperty("_beforeReceiveData"));
+				EditorGUILayout.PropertyField(serializedObject.FindProperty("_afterReceiveData"));
 			}
 			else
 			{
-				index = EditorGUILayout.Popup("Presenter", index, _urls.ToArray());
-				urlProp.stringValue = _urls[index];
-			}
+				var urlProp = serializedObject.FindProperty("_url");
+				int index = 0;
+				if (!string.IsNullOrEmpty(urlProp.stringValue))
+					index = _urls.FindIndex(u => u == urlProp.stringValue);
+				if (index < 0)
+				{
+					EditorGUILayout.HelpBox("Event is deleted or changed its name.\n" + urlProp.stringValue, MessageType.Error);
+					if (GUILayout.Button("Reset"))
+					{
+						urlProp.stringValue = "";
+					}
+				}
+				else
+				{
+					index = EditorGUILayout.Popup("Presenter", index, _urls.ToArray());
+					urlProp.stringValue = _urls[index];
+				}
 
-			if (index >= 0)
-			{
-				DrawParameters(_allEvents[index]);
+				if (index >= 0)
+				{
+					DrawParameters(_allEvents[index]);
+				}
 			}
 			serializedObject.ApplyModifiedProperties();
 		}

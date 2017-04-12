@@ -93,7 +93,7 @@ namespace Haruna.UnityMVP.Presenter
 
 					foreach (var field in fields)
 					{
-						if(field.FieldType == typeof(PresenterEvent<>))
+						if(field.FieldType == typeof(PresenterEvent) || field.FieldType.IsSubclassOf(typeof(PresenterEvent)))
 						{
 							var url = presenterName + "/" + field.Name;
 							if (_actionMapping.ContainsKey(url))

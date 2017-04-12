@@ -38,27 +38,26 @@ namespace Haruna.UnityMVP
 			EditorGUILayout.LabelField(label, valueTypeName);
 			EditorGUILayout.BeginHorizontal();
 			//EditorGUI.indentLevel++;
-			EditorGUILayout.PrefixLabel(" ");
-			var ret = DrawBinderField(value, binderInterfaceType);
+			var ret = DrawBinderField(" ",value, binderInterfaceType);
 			EditorGUILayout.EndHorizontal();
 			//EditorGUI.indentLevel--;
 			return ret;
 		}
 
-		public static UnityEngine.Object DrawBinderField(string valueTypeName, UnityEngine.Object value, Type binderInterfaceType)
-		{
-			EditorGUILayout.BeginHorizontal();
-			EditorGUILayout.PrefixLabel(valueTypeName);
-			var ret = DrawBinderField(value, binderInterfaceType);
-			EditorGUILayout.EndHorizontal();
-			return ret;
-		}
+		//public static UnityEngine.Object DrawBinderField(string valueTypeName, UnityEngine.Object value, Type binderInterfaceType)
+		//{
+		//	EditorGUILayout.BeginHorizontal();
+		//	EditorGUILayout.PrefixLabel(valueTypeName);
+		//	var ret = DrawBinderField(value, binderInterfaceType);
+		//	EditorGUILayout.EndHorizontal();
+		//	return ret;
+		//}
 
-		public static UnityEngine.Object DrawBinderField(UnityEngine.Object value, Type binderInterfaceType)
+		public static UnityEngine.Object DrawBinderField(string valueTypeName, UnityEngine.Object value, Type binderInterfaceType)
 		{
 			UnityEngine.Object returnValue = value;
 
-			var temp = EditorGUILayout.ObjectField(value, typeof(Component), true) as Component;
+			var temp = EditorGUILayout.ObjectField(valueTypeName, value, typeof(Component), true) as Component;
 			if (temp == null)
 			{
 				returnValue = null;

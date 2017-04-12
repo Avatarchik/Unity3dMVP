@@ -10,10 +10,25 @@ namespace Haruna.Unity.View
 	{
 		[SerializeField]
 		UnityEvent _initializeEvent;
+		public event UnityAction EvOnInitialize
+		{
+			add { _initializeEvent.AddListener(value); }
+			remove { _initializeEvent.RemoveListener(value); }
+		}
 		[SerializeField]
 		UnityEvent _showEvent;
+		public event UnityAction EvOnShow
+		{
+			add { _showEvent.AddListener(value); }
+			remove { _showEvent.RemoveListener(value); }
+		}
 		[SerializeField]
 		UnityEvent _hideEvent;
+		public event UnityAction EvOnHide
+		{
+			add { _hideEvent.AddListener(value); }
+			remove { _hideEvent.RemoveListener(value); }
+		}
 
 		//[SerializeField]
 		//PanelLayerEnum _sortingLayer = PanelLayerEnum.Default;
@@ -31,7 +46,7 @@ namespace Haruna.Unity.View
 		}
 		[SerializeField]
 		ActionOnInitializeEnum _actionOnInializing = ActionOnInitializeEnum.DoNothing;
-		
+
 		public virtual void Init()
 		{
 			if (_initializeEvent != null)

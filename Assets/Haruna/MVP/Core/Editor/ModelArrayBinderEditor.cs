@@ -61,7 +61,7 @@ namespace Haruna.UnityMVP.Model
 			{
 				EditorGUILayout.BeginHorizontal();
 				EditorGUILayout.PrefixLabel("Array Element Template");
-				templateProperty.objectReferenceValue = EditorKit.DrawBinderField(templateProperty.objectReferenceValue, templateInterfaceType);
+				templateProperty.objectReferenceValue = EditorKit.DrawBinderField("", templateProperty.objectReferenceValue, templateInterfaceType);
 				EditorGUILayout.EndHorizontal();
 			}
 			serializedObject.ApplyModifiedProperties();

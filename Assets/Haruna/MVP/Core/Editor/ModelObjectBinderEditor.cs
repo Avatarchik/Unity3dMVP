@@ -13,7 +13,7 @@ namespace Haruna.UnityMVP.Model
 	{
 		SerializedProperty _modelTypeProperty;
 		SerializedProperty _bindersProperty;
-		
+
 		List<string> _avaliableTypeStrings;
 		string[] _avaliableDisplayTypeStrings;
 
@@ -26,7 +26,7 @@ namespace Haruna.UnityMVP.Model
 			{
 				return t.GetCustomAttributes(typeof(MvpModelAttribute), true).Length != 0;
 			});
-			
+
 			_avaliableTypeStrings = avaliableTypes
 				.Select(t => TypeUtil.GetAssemblyTypeString(t))
 				.OrderBy(s => s).ToList();
@@ -34,6 +34,7 @@ namespace Haruna.UnityMVP.Model
 			_avaliableDisplayTypeStrings = _avaliableTypeStrings.Select(t => t.Split(';')[0]).ToArray();
 		}
 
+		int _tempIndex;
 		public override void OnInspectorGUI()
 		{
 			if (_avaliableTypeStrings == null || _avaliableTypeStrings.Count == 0)
@@ -56,6 +57,15 @@ namespace Haruna.UnityMVP.Model
 				{
 					_modelTypeProperty.stringValue = "";
 				}
+
+				EditorGUILayout.Space();
+				EditorGUILayout.BeginHorizontal();
+				_tempIndex = EditorGUILayout.Popup(_tempIndex, _avaliableDisplayTypeStrings.ToArray());
+				if (GUILayout.Button("Set As New"))
+				{
+					_modelTypeProperty.stringValue = _avaliableTypeStrings[_tempIndex];
+				}
+				EditorGUILayout.EndHorizontal();
 			}
 			else
 			{
@@ -75,7 +85,7 @@ namespace Haruna.UnityMVP.Model
 		void DrawSerializeFields(Type modelType)
 		{
 			var beforeSerializedValues = new Dictionary<string, ModelObjectBinder.SerializedBinder>();
-			
+
 			for (var i = 0; i < _bindersProperty.arraySize; i++)
 			{
 				var element = _bindersProperty.GetArrayElementAtIndex(i);
@@ -86,7 +96,7 @@ namespace Haruna.UnityMVP.Model
 					TokenType = (MTokenType)element.FindPropertyRelative("TokenType").intValue,
 					BinderInstance = element.FindPropertyRelative("BinderInstance").objectReferenceValue
 				};
-				if(!string.IsNullOrEmpty(value.FieldName))
+				if (!string.IsNullOrEmpty(value.FieldName))
 					beforeSerializedValues.Add(value.FieldName, value);
 			}
 
@@ -119,14 +129,14 @@ namespace Haruna.UnityMVP.Model
 				afterSerializedValues.Add(binderInfo);
 			}
 
-			for(var i = beforeSerializedValues.Count - 1; i >= afterSerializedValues.Count; i--)
+			for (var i = beforeSerializedValues.Count - 1; i >= afterSerializedValues.Count; i--)
 			{
 				_bindersProperty.DeleteArrayElementAtIndex(i);
 			}
-			
+
 			for (var i = 0; i < afterSerializedValues.Count; i++)
 			{
-				if(i >= _bindersProperty.arraySize)
+				if (i >= _bindersProperty.arraySize)
 				{
 					_bindersProperty.InsertArrayElementAtIndex(i);
 				}
@@ -137,7 +147,7 @@ namespace Haruna.UnityMVP.Model
 				element.FindPropertyRelative("TokenType").intValue = (int)data.TokenType;
 				element.FindPropertyRelative("BinderInstance").objectReferenceValue = data.BinderInstance;
 			}
-			
+
 		}
 	}
 }

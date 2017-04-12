@@ -18,7 +18,10 @@ namespace Haruna.UnityMVP.Model
 
 		public void SetData(MValue<Sprite> data)
 		{
-			_targetImage.sprite = data.Value;
+			if (data == null)
+				_targetImage.sprite = null;
+			else
+				_targetImage.sprite = data.Value;
 		}
 	}
 }
