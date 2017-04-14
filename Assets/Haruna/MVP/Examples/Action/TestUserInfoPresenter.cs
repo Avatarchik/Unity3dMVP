@@ -17,7 +17,7 @@ namespace Haruna.UnityMVP.Examples
 	}
 
 	[Presenter]
-	public static class UserInfoPresenter
+	public static class TestUserInfoPresenter
 	{
 		[PresenterAction(DisplayName = "Examples/UserInfo.GetUserInfo")]
 		public static UserInfoModel GetUserInfo(string uid)

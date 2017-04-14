@@ -6,7 +6,8 @@ using UnityEngine.UI;
 
 namespace Haruna.UnityMVP.Model
 {
-	public class ConstatStringBinder : MonoBehaviour, IMvpStringBinder
+	[AddComponentMenu("UnityMVP/Binder/ConstantStringBinder")]
+	public class ConstantStringBinder : MonoBehaviour, IMvpStringBinder
 	{
 		[SerializeField]
 		string _content;

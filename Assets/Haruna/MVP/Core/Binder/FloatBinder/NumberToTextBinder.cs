@@ -6,22 +6,19 @@ using UnityEngine.UI;
 
 namespace Haruna.UnityMVP.Model
 {
+	[AddComponentMenu("UnityMVP/Binder/NumberToTextBinder")]
+	[RequireComponent(typeof(Text))]
 	public class NumberToTextBinder : MonoBehaviour, IMvpFloatBinder
 	{
-		[SerializeField]
-		Text _toBindText;
-
-		//[SerializeField]
-		//string _formatter;
 		
 		public MFloat GetData()
 		{
-			return float.Parse(_toBindText.text);
+			return float.Parse(GetComponent<Text>().text);
 		}
 
 		public void SetData(MFloat data)
 		{
-			_toBindText.text = data.Value.ToString();
+			GetComponent<Text>().text = data.Value.ToString();
 		}
 	}
 }

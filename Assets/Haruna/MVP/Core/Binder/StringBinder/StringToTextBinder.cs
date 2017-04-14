@@ -6,22 +6,22 @@ using UnityEngine.UI;
 
 namespace Haruna.UnityMVP.Model
 {
+	[AddComponentMenu("UnityMVP/Binder/StringToTextBinder")]
+	[RequireComponent(typeof(Text))]
 	public class StringToTextBinder : MonoBehaviour, IMvpStringBinder
 	{
-		[SerializeField]
-		Text _toBindText;
 
 		public MString GetData()
 		{
-			return _toBindText.text;
+			return GetComponent<Text>().text;
 		}
 
 		public void SetData(MString data)
 		{
 			if (data == null)
-				_toBindText.text = "";
+				GetComponent<Text>().text = "";
 			else
-				_toBindText.text = data;
+				GetComponent<Text>().text = data;
 		}
 	}
 }

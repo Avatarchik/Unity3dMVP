@@ -11,6 +11,7 @@ namespace Haruna.UnityMVP.Presenter
 		void OnEvent(params MToken[] data);
 	}
 
+	[AddComponentMenu("UnityMVP/Linker/PresenterEventLinker")]
 	public class PresenterEventLinker : MonoBehaviour, IOnPresenterBroadcast
 	{
 		[SerializeField]

@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Haruna.UnityMVP.Examples
 {
 	[Presenter]
-	public static class DialogPresenter
+	public static class TestDialogPresenter
 	{
 		[MvpModel]
 		public class DialogSettings
@@ -33,7 +33,7 @@ namespace Haruna.UnityMVP.Examples
 			public Action OnMaskClick;
 		}
 
-		[PresenterEvent]
+		[PresenterEvent(DisplayName = "Examples/Dialog.ShowDialogEvent")]
 		static PresenterEvent<DialogSettings> ShowDialogEvent = new PresenterEvent<DialogSettings>();
 		
 		public static void ShowMessage(string content, Action onClose = null)
