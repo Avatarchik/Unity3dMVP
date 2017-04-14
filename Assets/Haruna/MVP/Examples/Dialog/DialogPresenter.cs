@@ -45,6 +45,7 @@ namespace Haruna.UnityMVP.Examples
 				CloseOnMaskClick = true,
 				OnMaskClick = onClose
 			});
+
 		}
 		public static void ShowDialog(string title, string content, 
 			string confirmButtonStr, string cancelButtonStr, Action onConfirm, Action onCancel = null)
