@@ -14,42 +14,46 @@ namespace Haruna.UnityMVP.Model
 		SerializedProperty _modelTypeProperty;
 		SerializedProperty _bindersProperty;
 
-		List<string> _avaliableTypeStrings;
+		List<MvpModelTypeInfo> _avaliableModels;
 		string[] _avaliableDisplayTypeStrings;
+
+		public struct MvpModelTypeInfo
+		{
+			public Type ReflectionType;
+			public string TypeString;
+			public string DisplayName;
+			public MvpModelTypeInfo(Type type)
+			{
+				ReflectionType = type;
+				TypeString = TypeUtil.GetAssemblyTypeString(type);
+				var attr = ((MvpModelAttribute)type.GetCustomAttributes(typeof(MvpModelAttribute), true)[0]);
+				DisplayName = string.IsNullOrEmpty(attr.DisplayName) ? TypeString.Split(';')[0] : attr.DisplayName;
+			}
+		}
 
 		void OnEnable()
 		{
 			_modelTypeProperty = serializedObject.FindProperty("_modelTypeString");
 			_bindersProperty = serializedObject.FindProperty("_binders");
 
-			var avaliableTypes = TypeUtil.GetAllTypes((t) =>
+			_avaliableModels = TypeUtil.GetAllTypes((t) =>
 			{
 				return t.GetCustomAttributes(typeof(MvpModelAttribute), true).Length != 0;
-			}).Select(t => new
-			{
-				Type = t,
-				DisplayName = ((MvpModelAttribute)t.GetCustomAttributes(typeof(MvpModelAttribute), true)[0]).DisplayName
-			});
-
-			_avaliableTypeStrings = avaliableTypes
-				.Select(t => TypeUtil.GetAssemblyTypeString(t.Type))
-				.OrderBy(s => s).ToList();
-
-			_avaliableDisplayTypeStrings = avaliableTypes.Select(
-				t => string.IsNullOrEmpty(t.DisplayName) ? TypeUtil.GetAssemblyTypeString(t.Type).Split(';')[0] : t.DisplayName)
-				.ToArray();
+			}).Select(t => new MvpModelTypeInfo(t)).OrderBy(s => s.DisplayName).ToList();
+			
+			_avaliableDisplayTypeStrings = _avaliableModels.Select(t => t.DisplayName).ToArray();
 		}
 
 		int _tempIndex;
 		public override void OnInspectorGUI()
 		{
-			if (_avaliableTypeStrings == null || _avaliableTypeStrings.Count == 0)
+			if (_avaliableModels == null || _avaliableModels.Count == 0)
 			{
 				EditorGUILayout.HelpBox("no model!", MessageType.Warning);
 				return;
 			}
 
-			int index = _avaliableTypeStrings.FindIndex(d => d == _modelTypeProperty.stringValue);
+			int index = _avaliableModels.FindIndex(d => d.TypeString == _modelTypeProperty.stringValue);
 			if (index < 0 && !string.IsNullOrEmpty(_modelTypeProperty.stringValue))
 			{
 				var displayTypeString = _modelTypeProperty.stringValue;
@@ -66,10 +70,10 @@ namespace Haruna.UnityMVP.Model
 
 				EditorGUILayout.Space();
 				EditorGUILayout.BeginHorizontal();
-				_tempIndex = EditorGUILayout.Popup(_tempIndex, _avaliableDisplayTypeStrings.ToArray());
+				_tempIndex = EditorGUILayout.Popup(_tempIndex, _avaliableDisplayTypeStrings);
 				if (GUILayout.Button("Set As New"))
 				{
-					_modelTypeProperty.stringValue = _avaliableTypeStrings[_tempIndex];
+					_modelTypeProperty.stringValue = _avaliableModels[_tempIndex].TypeString;
 				}
 				EditorGUILayout.EndHorizontal();
 			}
@@ -77,12 +81,10 @@ namespace Haruna.UnityMVP.Model
 			{
 				if (index < 0) index = 0;
 
-				index = EditorGUILayout.Popup("Model Type", index, _avaliableDisplayTypeStrings.ToArray());
+				index = EditorGUILayout.Popup("Model Type", index, _avaliableDisplayTypeStrings);
 
-				_modelTypeProperty.stringValue = _avaliableTypeStrings[index];
-				var currentType = TypeUtil.GetTypeWithAssemblyTypeString(_modelTypeProperty.stringValue, target);
-				if (currentType != null)
-					DrawSerializeFields(currentType);
+				_modelTypeProperty.stringValue = _avaliableModels[index].TypeString;
+				DrawSerializeFields(_avaliableModels[index].ReflectionType);
 			}
 
 			serializedObject.ApplyModifiedProperties();
