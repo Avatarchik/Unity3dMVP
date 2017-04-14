@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace Haruna.UnityMVP.Examples
 {
+	[ExecuteInEditMode]
 	public class TestShowDialog : MonoBehaviour
 	{
 #if UNITY_EDITOR
