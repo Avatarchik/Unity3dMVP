@@ -16,7 +16,7 @@ namespace Haruna.UnityMVP.Examples
 			{
 				if(GUILayout.Button("Show Message"))
 				{
-					DialogPresenter.ShowMessage("This is a message.", () =>
+					TestDialogPresenter.ShowMessage("This is a message.", () =>
 					{
 						Debug.Log("message box close");
 					});
@@ -24,7 +24,7 @@ namespace Haruna.UnityMVP.Examples
 
 				if(GUILayout.Button("Show Dialog"))
 				{
-					DialogPresenter.ShowDialog("Test Dialog", "This is a dialog", "OK", "Deny", () =>
+					TestDialogPresenter.ShowDialog("Test Dialog", "This is a dialog", "OK", "Deny", () =>
 					{
 						Debug.Log("user click ok");
 					}, () =>

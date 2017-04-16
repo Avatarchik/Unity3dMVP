@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Haruna.UnityMVP.Model
 {
+	[AddComponentMenu("UnityMVP/Binder/ModelObjectBinder")]
 	public class ModelObjectBinder : MonoBehaviour, IMvpObjectBinder
 	{
 		[SerializeField]
