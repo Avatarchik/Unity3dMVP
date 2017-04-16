@@ -14,7 +14,7 @@ namespace Haruna.UnityMVP.Examples
 		{
 			public override void OnInspectorGUI()
 			{
-				if(GUILayout.Button("Show Message"))
+				if(GUILayout.Button("Show Message") && Application.isPlaying)
 				{
 					TestDialogPresenter.ShowMessage("This is a message.", () =>
 					{
@@ -22,7 +22,7 @@ namespace Haruna.UnityMVP.Examples
 					});
 				}
 
-				if(GUILayout.Button("Show Dialog"))
+				if(GUILayout.Button("Show Dialog") && Application.isPlaying)
 				{
 					TestDialogPresenter.ShowDialog("Test Dialog", "This is a dialog", "OK", "Deny", () =>
 					{

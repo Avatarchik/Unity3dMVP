@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace Haruna.UnityMVP.Model
 {
-	[AddComponentMenu("UnityMVP/Binder/NumberToTextBinder")]
+	[AddComponentMenu("UnityMVP/Binder/FloatToTextBinder")]
 	[RequireComponent(typeof(Text))]
-	public class NumberToTextBinder : MonoBehaviour, IMvpFloatBinder
+	public class FloatToTextBinder : MonoBehaviour, IMvpFloatBinder
 	{
 		
 		public MFloat GetData()

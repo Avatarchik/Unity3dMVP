@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace Haruna.UnityMVP.Model
 {
-	[AddComponentMenu("UnityMVP/Binder/BoolToEventBinder")]
+	[AddComponentMenu("UnityMVP/Binder/Bool/BoolToEventBinder")]
 	public class BoolToEventBinder : MonoBehaviour, IMvpBoolBinder
 	{
 		public class BoolUnityEvent : UnityEvent<bool> { }
