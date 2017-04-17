@@ -12,7 +12,7 @@ namespace Haruna.UnityMVP.Model
 		Object,
 		Custom
 	}
-
+	[AddComponentMenu("UnityMVP/Binder/ArrayBinder")]
 	public class ModelArrayBinder : MonoBehaviour, IMvpArrayBinder
 	{
 		[SerializeField]

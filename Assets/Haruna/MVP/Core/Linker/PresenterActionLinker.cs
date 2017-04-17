@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace Haruna.UnityMVP.Presenter
 {
+	[AddComponentMenu("UnityMVP/Linker/PresenterActionLinker")]
 	public class PresenterActionLinker : MonoBehaviour
 	{
 		[SerializeField]

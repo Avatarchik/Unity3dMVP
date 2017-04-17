@@ -16,7 +16,7 @@ namespace Haruna.Unity.View
 				if (_instance == null)
 				{
 					_instance = FindObjectOfType<ViewManager>();
-					DontDestroyOnLoad(_instance);
+					//DontDestroyOnLoad(_instance);
 				}
 				return _instance;
 			}
@@ -35,7 +35,7 @@ namespace Haruna.Unity.View
 
 		public void Init()
 		{
-			_viewList.AddRange(GetComponentsInChildren<BaseView>());
+			_viewList.AddRange(GetComponentsInChildren<BaseView>(true));
 			foreach(var view in _viewList)
 			{
 				view.Init();

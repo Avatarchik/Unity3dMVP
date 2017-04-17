@@ -6,22 +6,22 @@ using UnityEngine.UI;
 
 namespace Haruna.UnityMVP.Model
 {
+	[AddComponentMenu("UnityMVP/Binder/SpriteToImageBinder")]
+	[RequireComponent(typeof(Image))]
 	public class SpriteToImageBinder : MonoBehaviour, IMvpCustomTypeBinder<Sprite>
 	{
-		[SerializeField]
-		Image _targetImage;
 
 		public MValue<Sprite> GetData()
 		{
-			return new MValue<Sprite>(_targetImage.sprite);
+			return new MValue<Sprite>(GetComponent<Image>().sprite);
 		}
 
 		public void SetData(MValue<Sprite> data)
 		{
 			if (data == null)
-				_targetImage.sprite = null;
+				GetComponent<Image>().sprite = null;
 			else
-				_targetImage.sprite = data.Value;
+				GetComponent<Image>().sprite = data.Value;
 		}
 	}
 }

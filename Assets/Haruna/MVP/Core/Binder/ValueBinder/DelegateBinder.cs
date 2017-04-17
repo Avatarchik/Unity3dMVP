@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 namespace Haruna.UnityMVP.Model
 {
+	[AddComponentMenu("UnityMVP/Binder/DelegateBinder")]
 	public class DelegateBinder : MonoBehaviour, IMvpCustomTypeBinder<Action>
 	{
 		[SerializeField]
