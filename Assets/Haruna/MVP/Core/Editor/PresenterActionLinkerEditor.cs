@@ -49,6 +49,9 @@ namespace Haruna.UnityMVP.Presenter
 
 			if (index >= 0)
 			{
+				var isAsyncProperty = serializedObject.FindProperty("_async");
+				isAsyncProperty.boolValue = _allActions[index].IsAsync;
+
 				DrawParameters(_allActions[index]);
 				DrawResponse(_allActions[index]);
 			}
@@ -68,8 +71,11 @@ namespace Haruna.UnityMVP.Presenter
 			}
 			else
 			{
+				var parameterLength = parameters.Length;
+				if (action.IsAsync)
+					parameterLength--;
 
-				for(var i = 0; i < parameters.Length; i++)
+				for(var i = 0; i < parameterLength; i++)
 				{
 					if (binderProperties.arraySize <= i)
 						binderProperties.InsertArrayElementAtIndex(i);
@@ -94,14 +100,47 @@ namespace Haruna.UnityMVP.Presenter
 		{
 			EditorGUILayout.LabelField("Responese");
 			EditorGUI.indentLevel++;
-			var retType = action.Method.ReturnType;
+
+			Type retType = null;
+			if (action.IsAsync)
+			{
+				var parameters = action.Method.GetParameters();
+				var lastParam = parameters[parameters.Length - 1];
+				if (lastParam.ParameterType.IsSubclassOf(typeof(AsyncReturn)))
+				{
+					var genericTypes = lastParam.ParameterType.GetGenericArguments();
+					if(genericTypes.Length == 0)
+					{
+						retType = typeof(object);
+					}
+					else
+					{
+						retType = genericTypes[0];
+					}
+				}
+				else
+				{
+					EditorGUILayout.HelpBox("it is an async action but the last parameter is not AysncReturn", MessageType.Error);
+					return;
+				}
+			}
+			else
+			{
+				retType = action.Method.ReturnType;
+			}
+
 			if (retType == null)
 			{
 				EditorGUILayout.HelpBox("No response data", MessageType.Info);
 			}
 			else
 			{
-				var binderProperty = serializedObject.FindProperty("_responseDataBinder");
+				var binderListProperty = serializedObject.FindProperty("_responseDataBinder");
+				if (binderListProperty.arraySize == 0)
+					binderListProperty.InsertArrayElementAtIndex(0);
+
+				var binderProperty = binderListProperty.GetArrayElementAtIndex(0);
+
 				if (retType.GetInterface(typeof(IPresenterResponse).FullName) != null
 					|| retType == typeof(MToken) || retType.IsSubclassOf(typeof(MToken)))
 				{

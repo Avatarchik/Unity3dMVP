@@ -13,6 +13,11 @@ namespace Haruna.UnityMVP.Presenter
 	{
 		public string DisplayName { set; get; }
 	}
+	//[AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+	//public class PresenterAsyncActionAttribute : Attribute
+	//{
+	//	public string DisplayName { set; get; }
+	//}
 	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false)]
 	public class PresenterEventAttribute : Attribute
 	{

@@ -10,23 +10,40 @@ namespace Haruna.UnityMVP.Presenter
 	public class PresenterActionLinker : MonoBehaviour
 	{
 		[SerializeField]
+		bool _async;
+		[SerializeField]
 		string _url;
 
 		[SerializeField]
 		List<Component> _toSendDataBinders;
 
 		[SerializeField]
-		Component _responseDataBinder;
+		List<Component> _responseDataBinder;
 
 		public void SendRequest()
 		{
 			var toSendData = _toSendDataBinders.Select(b => BinderUtil.GetValueFromBinder(b));
-			var res = PresenterDispatcher.GetInstance().RequestWithMTokens(_url, toSendData.ToArray());
-			if(res.StatusCode == 200)
+			if (!_async)
 			{
-				if(res.Data != null)
+				var res = PresenterDispatcher.GetInstance().RequestWithMTokens(_url, toSendData.ToArray());
+				OnAsyncResponse(res);
+			}
+			else
+			{
+				PresenterDispatcher.GetInstance().RequestWithMTokensAsync(this, OnAsyncResponse, _url, toSendData.ToArray());
+			}
+		}
+
+		void OnAsyncResponse(IPresenterResponse res)
+		{
+			if (res.StatusCode == 200)
+			{
+				if (res.Data != null)
 				{
-					BinderUtil.SetValueToBinder(res.Data, _responseDataBinder);
+					for(var i = 0; i < _responseDataBinder.Count; i++)
+					{
+						BinderUtil.SetValueToBinder(res.Data[i], _responseDataBinder[i]);
+					}
 				}
 			}
 			else

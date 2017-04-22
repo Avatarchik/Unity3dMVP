@@ -29,5 +29,22 @@ namespace Haruna.UnityMVP.Examples
 			
 			return info;
 		}
+
+		[PresenterAction(DisplayName = "Examples/UserInfo.GetUserInfoAsync")]
+		public static void GetUserInfoAsync(string uid, AsyncReturn<UserInfoModel> userInfo)
+		{
+			var info = new UserInfoModel();
+			info.UserId = "uid : " + uid;
+			info.NickName = "John Smith";
+			info.Portrait = Resources.Load<Sprite>("UnityMVP_Example_Portrait");
+
+			System.Threading.Thread thread = new System.Threading.Thread(new System.Threading.ThreadStart(() =>
+			{
+				System.Threading.Thread.Sleep(2000);
+				userInfo.Return(info);
+			}));
+
+			thread.Start();
+		}
 	}
 }

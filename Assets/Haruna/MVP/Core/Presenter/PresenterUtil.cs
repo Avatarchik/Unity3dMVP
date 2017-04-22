@@ -10,6 +10,7 @@ namespace Haruna.UnityMVP.Presenter
 {
 	public class PresenterActionInfo
 	{
+		public bool IsAsync;
 		public string Url;
 		public Type PresenterType;
 		public string DisplayUrl;
@@ -64,8 +65,19 @@ namespace Haruna.UnityMVP.Presenter
 						}
 						else
 						{
+							bool isAsync = false;
+							var parameters = method.GetParameters();
+							if(parameters.Length != 0)
+							{
+								var last = parameters[parameters.Length - 1];
+								if(last.ParameterType == typeof(AsyncReturn) || last.ParameterType.IsSubclassOf(typeof(AsyncReturn)))
+								{
+									isAsync = true;
+								}
+							}
 							var actionInfo = new PresenterActionInfo()
 							{
+								IsAsync = isAsync,
 								Url = url,
 								DisplayUrl = ((PresenterActionAttribute)(actionAttrs[0])).DisplayName,
 								PresenterType = type,
