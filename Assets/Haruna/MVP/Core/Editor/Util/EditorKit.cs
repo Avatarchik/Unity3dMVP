@@ -23,7 +23,17 @@ namespace Haruna.UnityMVP
 
 		public static SerializedType DrawTypeSelector(string labelName, string typeString, List<SerializedType> typesList)
 		{
-			var displayString = typesList.Select(s => s.TypeString.Split(';')[0].Replace('.', '/')).ToArray();
+			var displayString = typesList.Select(s =>
+			{
+				var temp = s.TypeString.Split(';')[0];
+				var lastDot = temp.LastIndexOf('.');
+				if(lastDot >= 0)
+				{
+					temp = temp.Substring(0, lastDot) + "/" + temp.Substring(lastDot + 1);
+				}
+				return temp;
+			}).ToArray();
+
 			var index = typesList.FindIndex(t => t.TypeString == typeString);
 			if (index < 0) index = 0;
 			if (string.IsNullOrEmpty(labelName))
