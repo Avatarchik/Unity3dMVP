@@ -118,12 +118,12 @@ namespace Haruna.UnityMVP.Presenter
 			{
 				var parameters = action.Method.GetParameters();
 				var lastParam = parameters[parameters.Length - 1];
-				if (lastParam.ParameterType.IsSubclassOf(typeof(AsyncReturn)))
+				if (lastParam.ParameterType == typeof(AsyncReturn) || lastParam.ParameterType.IsSubclassOf(typeof(AsyncReturn)))
 				{
 					var genericTypes = lastParam.ParameterType.GetGenericArguments();
 					if(genericTypes.Length == 0)
 					{
-						retType = typeof(object);
+						retType = typeof(void);
 					}
 					else
 					{
@@ -141,7 +141,7 @@ namespace Haruna.UnityMVP.Presenter
 				retType = action.Method.ReturnType;
 			}
 
-			if (retType == null)
+			if (retType == typeof(void))
 			{
 				EditorGUILayout.HelpBox("No response data", MessageType.Info);
 			}

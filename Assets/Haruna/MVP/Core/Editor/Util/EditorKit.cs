@@ -21,7 +21,8 @@ namespace Haruna.UnityMVP
 			}
 		}
 
-		public static SerializedType DrawTypeSelector(string labelName, string typeString, List<SerializedType> typesList)
+		static int _tempIndex;
+		public static SerializedType? DrawTypeSelector(string labelName, string typeString, List<SerializedType> typesList)
 		{
 			var displayString = typesList.Select(s =>
 			{
@@ -35,12 +36,36 @@ namespace Haruna.UnityMVP
 			}).ToArray();
 
 			var index = typesList.FindIndex(t => t.TypeString == typeString);
-			if (index < 0) index = 0;
-			if (string.IsNullOrEmpty(labelName))
-				index = EditorGUILayout.Popup(index, displayString);
+			if (!string.IsNullOrEmpty(typeString) && index < 0)
+			{
+				EditorGUILayout.HelpBox("Type is deleted or changed its name.\n" + typeString.Replace(';', '\n'), MessageType.Error);
+				if (GUILayout.Button("Reset Serialized Value"))
+				{
+					return typesList[0];
+				}
+
+				EditorGUILayout.Space();
+
+				EditorGUILayout.BeginHorizontal();
+				_tempIndex = EditorGUILayout.Popup(_tempIndex, displayString);
+				if (GUILayout.Button("Set As New"))
+				{
+					return typesList[_tempIndex];
+				}
+				EditorGUILayout.EndHorizontal();
+
+				return null;
+			}
 			else
-				index = EditorGUILayout.Popup(labelName, index, displayString);
-			return typesList[index];
+			{
+				if (index < 0) index = 0;
+
+				if (string.IsNullOrEmpty(labelName))
+					index = EditorGUILayout.Popup(index, displayString);
+				else
+					index = EditorGUILayout.Popup(labelName, index, displayString);
+				return typesList[index];
+			}
 		}
 		
 		public static UnityEngine.Object DrawBinderField(string label, string valueTypeName, UnityEngine.Object value, Type binderInterfaceType)

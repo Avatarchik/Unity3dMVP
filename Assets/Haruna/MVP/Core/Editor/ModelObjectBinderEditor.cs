@@ -15,19 +15,17 @@ namespace Haruna.UnityMVP.Model
 		SerializedProperty _bindersProperty;
 
 		List<MvpModelTypeInfo> _avaliableModels;
-		string[] _avaliableDisplayTypeStrings;
+		List<EditorKit.SerializedType> _avaliableModelTypes;
 
 		public struct MvpModelTypeInfo
 		{
-			public Type ReflectionType;
-			public string TypeString;
+			public EditorKit.SerializedType ReflectionType;
 			public string DisplayName;
 			public MvpModelTypeInfo(Type type)
 			{
-				ReflectionType = type;
-				TypeString = TypeUtil.GetAssemblyTypeString(type);
+				ReflectionType = new EditorKit.SerializedType(type);
 				var attr = ((MvpModelAttribute)type.GetCustomAttributes(typeof(MvpModelAttribute), true)[0]);
-				DisplayName = string.IsNullOrEmpty(attr.DisplayName) ? TypeString.Split(';')[0] : attr.DisplayName;
+				DisplayName = string.IsNullOrEmpty(attr.DisplayName) ? ReflectionType.TypeString.Split(';')[0] : attr.DisplayName;
 			}
 		}
 
@@ -41,7 +39,7 @@ namespace Haruna.UnityMVP.Model
 				return t.GetCustomAttributes(typeof(MvpModelAttribute), true).Length != 0;
 			}).Select(t => new MvpModelTypeInfo(t)).OrderBy(s => s.DisplayName).ToList();
 			
-			_avaliableDisplayTypeStrings = _avaliableModels.Select(t => t.DisplayName).ToArray();
+			_avaliableModelTypes = _avaliableModels.Select(t => t.ReflectionType).ToList();
 		}
 
 		int _tempIndex;
@@ -53,39 +51,47 @@ namespace Haruna.UnityMVP.Model
 				return;
 			}
 
-			int index = _avaliableModels.FindIndex(d => d.TypeString == _modelTypeProperty.stringValue);
-			if (index < 0 && !string.IsNullOrEmpty(_modelTypeProperty.stringValue))
+			var temp = EditorKit.DrawTypeSelector("Model Type", _modelTypeProperty.stringValue, _avaliableModelTypes);
+			if(temp != null)
 			{
-				var displayTypeString = _modelTypeProperty.stringValue;
-				var temp = displayTypeString.Split(';');
-				if (temp.Length == 2)
-				{
-					displayTypeString = temp[0] + "\n" + temp[1];
-				}
-				EditorGUILayout.HelpBox("Serialized Value Error. Model Type is not exist\n" + displayTypeString, MessageType.Error, true);
-				if (GUILayout.Button("Reset Serialized Value"))
-				{
-					_modelTypeProperty.stringValue = "";
-				}
-
-				EditorGUILayout.Space();
-				EditorGUILayout.BeginHorizontal();
-				_tempIndex = EditorGUILayout.Popup(_tempIndex, _avaliableDisplayTypeStrings);
-				if (GUILayout.Button("Set As New"))
-				{
-					_modelTypeProperty.stringValue = _avaliableModels[_tempIndex].TypeString;
-				}
-				EditorGUILayout.EndHorizontal();
+				_modelTypeProperty.stringValue = temp.Value.TypeString;
+				DrawSerializeFields(temp.Value.Type);
 			}
-			else
-			{
-				if (index < 0) index = 0;
 
-				index = EditorGUILayout.Popup("Model Type", index, _avaliableDisplayTypeStrings);
+			//int index = _avaliableModels.FindIndex(d => d.TypeString == _modelTypeProperty.stringValue);
 
-				_modelTypeProperty.stringValue = _avaliableModels[index].TypeString;
-				DrawSerializeFields(_avaliableModels[index].ReflectionType);
-			}
+			//if (index < 0 && !string.IsNullOrEmpty(_modelTypeProperty.stringValue))
+			//{
+			//	var displayTypeString = _modelTypeProperty.stringValue;
+			//	var temp = displayTypeString.Split(';');
+			//	if (temp.Length == 2)
+			//	{
+			//		displayTypeString = temp[0] + "\n" + temp[1];
+			//	}
+			//	EditorGUILayout.HelpBox("Serialized Value Error. Model Type is not exist\n" + displayTypeString, MessageType.Error, true);
+			//	if (GUILayout.Button("Reset Serialized Value"))
+			//	{
+			//		_modelTypeProperty.stringValue = "";
+			//	}
+
+			//	EditorGUILayout.Space();
+			//	EditorGUILayout.BeginHorizontal();
+			//	_tempIndex = EditorGUILayout.Popup(_tempIndex, _avaliableModelTypes);
+			//	if (GUILayout.Button("Set As New"))
+			//	{
+			//		_modelTypeProperty.stringValue = _avaliableModels[_tempIndex].TypeString;
+			//	}
+			//	EditorGUILayout.EndHorizontal();
+			//}
+			//else
+			//{
+			//	if (index < 0) index = 0;
+
+			//	index = EditorGUILayout.Popup("Model Type", index, _avaliableModelTypes);
+
+			//	_modelTypeProperty.stringValue = _avaliableModels[index].TypeString;
+			//	DrawSerializeFields(_avaliableModels[index].ReflectionType);
+			//}
 
 			serializedObject.ApplyModifiedProperties();
 		}

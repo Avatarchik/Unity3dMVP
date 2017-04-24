@@ -51,8 +51,11 @@ namespace Haruna.UnityMVP.Model
 						else
 						{
 							var returnType = EditorKit.DrawTypeSelector("Custom Element Type", customElementTypeStringProp.stringValue, _allBinderValueTypes);
-							customElementTypeStringProp.stringValue = returnType.TypeString;
-							templateInterfaceType = typeof(IMvpCustomTypeBinder<>).MakeGenericType(returnType.Type);
+							if (returnType != null)
+							{
+								customElementTypeStringProp.stringValue = returnType.Value.TypeString;
+								templateInterfaceType = typeof(IMvpCustomTypeBinder<>).MakeGenericType(returnType.Value.Type);
+							}
 						}
 					}
 					break;
