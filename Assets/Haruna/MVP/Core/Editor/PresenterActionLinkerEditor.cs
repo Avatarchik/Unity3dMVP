@@ -21,6 +21,8 @@ namespace Haruna.UnityMVP.Presenter
 			_displayUrls = _allActions.Select(a => string.IsNullOrEmpty(a.DisplayUrl) ? a.Url : a.DisplayUrl).ToArray();
 		}
 
+		int _tempIndex;
+
 		public override void OnInspectorGUI()
 		{
 			if(_urls.Count == 0)
@@ -36,10 +38,20 @@ namespace Haruna.UnityMVP.Presenter
 			if (index < 0)
 			{
 				EditorGUILayout.HelpBox("Action is deleted or changed its name.\n" + urlProp.stringValue, MessageType.Error);
-				if (GUILayout.Button("Reset"))
+				if (GUILayout.Button("Reset Serialized Value"))
 				{
 					urlProp.stringValue = "";
 				}
+
+				EditorGUILayout.Space();
+
+				EditorGUILayout.BeginHorizontal();
+				_tempIndex = EditorGUILayout.Popup(_tempIndex, _displayUrls);
+				if (GUILayout.Button("Set As New"))
+				{
+					urlProp.stringValue = _allActions[_tempIndex].Url;
+				}
+				EditorGUILayout.EndHorizontal();
 			}
 			else
 			{
