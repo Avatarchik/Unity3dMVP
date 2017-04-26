@@ -114,11 +114,11 @@ namespace Haruna.UnityMVP.Presenter
 								continue;
 							
 							var url = presenterName + "/" + field.Name;
-							if (_actionMapping.ContainsKey(url))
+							if (_eventMapping.ContainsKey(url))
 							{
-								var existed = _actionMapping[url];
+								var existed = _eventMapping[url];
 								Debug.LogErrorFormat("Url duplicate {0}.\n{1}, {2}.{3} \n{4}, {5}.{6}", url,
-									existed.PresenterType.Assembly.FullName, existed.PresenterType.FullName, existed.Method.Name,
+									existed.PresenterType.Assembly.FullName, existed.PresenterType.FullName, existed.Field.Name,
 									assembly.FullName, type.FullName, field.Name);
 							}
 							else

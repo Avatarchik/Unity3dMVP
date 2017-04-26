@@ -92,15 +92,22 @@ namespace Haruna.UnityMVP.Presenter
 
 			var binderProperties = serializedObject.FindProperty("_toSendDataBinders");
 			var parameters = action.Method.GetParameters();
-			if (parameters.Length == 0)
+
+			var parameterLength = parameters.Length;
+			if (action.IsAsync)
+				parameterLength--;
+
+			if (parameterLength == 0)
 			{
 				EditorGUILayout.HelpBox("No parameter to send", MessageType.Info);
+
+				while (binderProperties.arraySize > 0)
+				{
+					binderProperties.DeleteArrayElementAtIndex(0);
+				}
 			}
 			else
 			{
-				var parameterLength = parameters.Length;
-				if (action.IsAsync)
-					parameterLength--;
 
 				for(var i = 0; i < parameterLength; i++)
 				{
