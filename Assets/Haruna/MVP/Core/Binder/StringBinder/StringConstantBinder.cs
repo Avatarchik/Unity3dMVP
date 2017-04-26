@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine;
 
 namespace Haruna.UnityMVP.Model
 {
@@ -30,6 +26,10 @@ namespace Haruna.UnityMVP.Model
 					_content = data;
 			}
 			//do nothing;
+		}
+		public bool HasEditorError()
+		{
+			return false;
 		}
 	}
 }

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
@@ -38,6 +39,18 @@ namespace Haruna.UnityMVP.Model
 		{
 			Debug.LogWarningFormat(this, "Get data from BoolToEventBinder.");
 			return _value;
+		}
+
+		public bool HasEditorError()
+		{
+			if (BinderUtil.IsUnityEventHasError(_onValueChangeEvent))
+				return true;
+			if (BinderUtil.IsUnityEventHasError(_onValueTrueEvent))
+				return true;
+			if (BinderUtil.IsUnityEventHasError(_onValueFalseEvent))
+				return true;
+
+			return false;
 		}
 	}
 }

@@ -136,5 +136,26 @@ namespace Haruna.UnityMVP.Model
 		{
 			return _implementedBinderValueTypes;
 		}
+
+		public static bool IsUnityEventHasError(UnityEngine.Events.UnityEventBase ev)
+		{
+			var count = ev.GetPersistentEventCount();
+			for (var i = 0; i < count; i++)
+			{
+				var target = ev.GetPersistentTarget(i);
+				if (target == null)
+					return true;
+
+				var methodName = ev.GetPersistentMethodName(i);
+				if (string.IsNullOrEmpty(methodName))
+					return true;
+
+				var type = target.GetType();
+				if (type.GetMethod(methodName, BindingFlags.Instance | BindingFlags.Static 
+					| BindingFlags.Public | BindingFlags.NonPublic) == null)
+					return true;
+			}
+			return false;
+		}
 	}
 }

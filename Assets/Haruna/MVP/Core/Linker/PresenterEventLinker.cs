@@ -49,5 +49,18 @@ namespace Haruna.UnityMVP.Presenter
 		{
 			PresenterDispatcher.GetInstance().RegistPresenterEvent(_url, this);
 		}
+
+		public bool HasEditorError()
+		{
+			var eventsMapping = PresenterUtil.GetAllPresetnerEvents();
+			if (!eventsMapping.ContainsKey(_url))
+				return true;
+
+			if (_eventParameterBinders.Any(b => b == null))
+				return true;
+
+			return BinderUtil.IsUnityEventHasError(_beforeReceiveData)
+				|| BinderUtil.IsUnityEventHasError(_afterReceiveData);
+		}
 	}
 }

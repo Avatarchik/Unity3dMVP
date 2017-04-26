@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Haruna.UnityMVP.Model
@@ -26,6 +28,12 @@ namespace Haruna.UnityMVP.Model
 		public MBool GetData()
 		{
 			return new MBool(false);
+		}
+
+		public bool HasEditorError()
+		{
+			return _gameObjectsToSet.Any(go => go == null)
+				|| _gameObjectsToReverseSet.Any(go => go == null);
 		}
 	}
 }

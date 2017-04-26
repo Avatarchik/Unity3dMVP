@@ -61,5 +61,16 @@ namespace Haruna.UnityMVP.Model
 
 			return ret;
 		}
+
+		public bool HasEditorError()
+		{
+			if (_arrayElementTemplate == null)
+				return true;
+
+			if (_arrayElementType == ArrayElementTypeEnum.Custom)
+				return TypeUtil.GetTypeWithAssemblyTypeString(_customElementTypeString) == null;
+
+			return false;
+		}
 	}
 }

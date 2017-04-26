@@ -32,5 +32,9 @@ namespace Haruna.UnityMVP.Model
 				_action();
 			}
 		}
+		public bool HasEditorError()
+		{
+			return false;
+		}
 	}
 }

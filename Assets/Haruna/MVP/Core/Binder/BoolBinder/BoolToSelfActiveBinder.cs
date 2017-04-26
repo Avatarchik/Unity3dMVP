@@ -28,5 +28,10 @@ namespace Haruna.UnityMVP.Model
 			Debug.LogWarningFormat(this, "Get data from BoolToEventBinder.");
 			return _value;
 		}
+
+		public bool HasEditorError()
+		{
+			return false;
+		}
 	}
 }

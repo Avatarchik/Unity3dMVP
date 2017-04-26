@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Haruna.UnityMVP.Model
@@ -55,6 +56,15 @@ namespace Haruna.UnityMVP.Model
 				obj.Add(serializedBinder.FieldName, BinderUtil.GetValueFromBinder(serializedBinder.BinderInstance));
 			}
 			return obj;
+		}
+
+		public bool HasEditorError()
+		{
+			if (_binders == null)
+				return false;
+
+			return  _binders.Any(b => b.BinderInstance == null)
+				|| TypeUtil.GetTypeWithAssemblyTypeString(_modelTypeString) == null;
 		}
 	}
 }

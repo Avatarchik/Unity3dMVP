@@ -7,7 +7,6 @@ namespace Haruna.UnityMVP.Model
 	[RequireComponent(typeof(Text))]
 	public class FloatToTextBinder : MonoBehaviour, IMvpFloatBinder
 	{
-		
 		public MFloat GetData()
 		{
 			return float.Parse(GetComponent<Text>().text);
@@ -16,6 +15,11 @@ namespace Haruna.UnityMVP.Model
 		public void SetData(MFloat data)
 		{
 			GetComponent<Text>().text = data.Value.ToString();
+		}
+
+		public bool HasEditorError()
+		{
+			return false;
 		}
 	}
 }

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace Haruna.UnityMVP.Model
@@ -10,7 +7,6 @@ namespace Haruna.UnityMVP.Model
 	[RequireComponent(typeof(Text))]
 	public class StringToTextBinder : MonoBehaviour, IMvpStringBinder
 	{
-
 		public MString GetData()
 		{
 			return GetComponent<Text>().text;
@@ -22,6 +18,11 @@ namespace Haruna.UnityMVP.Model
 				GetComponent<Text>().text = "";
 			else
 				GetComponent<Text>().text = data;
+		}
+
+		public bool HasEditorError()
+		{
+			return false;
 		}
 	}
 }

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace Haruna.UnityMVP.Model
@@ -22,6 +19,11 @@ namespace Haruna.UnityMVP.Model
 				GetComponent<Image>().sprite = null;
 			else
 				GetComponent<Image>().sprite = data.Value;
+		}
+
+		public bool HasEditorError()
+		{
+			return false;
 		}
 	}
 }

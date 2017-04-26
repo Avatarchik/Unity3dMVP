@@ -17,5 +17,10 @@ namespace Haruna.UnityMVP.Model
 		{
 			_value = data.Value;
 		}
+
+		public bool HasEditorError()
+		{
+			return false;
+		}
 	}
 }

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Haruna.UnityMVP.Presenter
 {
@@ -19,6 +20,11 @@ namespace Haruna.UnityMVP.Presenter
 
 		[SerializeField]
 		List<Component> _responseDataBinder;
+		
+		[SerializeField]
+		UnityEvent _beforeReceiveData;
+		[SerializeField]
+		UnityEvent _afterReceiveData;
 
 		public void SendRequest()
 		{
@@ -26,16 +32,17 @@ namespace Haruna.UnityMVP.Presenter
 			if (!_async)
 			{
 				var res = PresenterDispatcher.GetInstance().RequestWithMTokens(_url, toSendData.ToArray());
-				OnAsyncResponse(res);
+				OnResponse(res);
 			}
 			else
 			{
-				PresenterDispatcher.GetInstance().RequestWithMTokensAsync(this, OnAsyncResponse, _url, toSendData.ToArray());
+				PresenterDispatcher.GetInstance().RequestWithMTokensAsync(this, OnResponse, _url, toSendData.ToArray());
 			}
 		}
 
-		void OnAsyncResponse(IPresenterResponse res)
+		void OnResponse(IPresenterResponse res)
 		{
+			_beforeReceiveData.Invoke();
 			if (res.StatusCode == 200)
 			{
 				if (res.Data != null)
@@ -50,6 +57,22 @@ namespace Haruna.UnityMVP.Presenter
 			{
 				Debug.LogWarningFormat(this, "Local request {0} returned with error. code {1} : {2}", _url, res.StatusCode, res.ErrorMessage);
 			}
+
+			_afterReceiveData.Invoke();
+		}
+
+		public bool HasEditorError()
+		{
+			var actionMapping = PresenterUtil.GetAllPresenterAction();
+			if (!actionMapping.ContainsKey(_url))
+				return true;
+
+			if (_toSendDataBinders.Any(b => b == null)
+				|| _responseDataBinder.Any(b => b == null))
+				return true;
+			
+			return BinderUtil.IsUnityEventHasError(_beforeReceiveData)
+				|| BinderUtil.IsUnityEventHasError(_afterReceiveData);
 		}
 	}
 }

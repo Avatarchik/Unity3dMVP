@@ -21,6 +21,7 @@ namespace Haruna.UnityMVP.Presenter
 			_displayUrls = _allActions.Select(a => string.IsNullOrEmpty(a.DisplayUrl) ? a.Url : a.DisplayUrl).ToArray();
 		}
 
+		int _selectedPageIndex;
 		int _tempIndex;
 
 		public override void OnInspectorGUI()
@@ -31,41 +32,55 @@ namespace Haruna.UnityMVP.Presenter
 				return;
 			}
 
-			var urlProp = serializedObject.FindProperty("_url");
-			int index = 0;
-			if (!string.IsNullOrEmpty(urlProp.stringValue))
-				index = _urls.FindIndex(u => u == urlProp.stringValue);
-			if (index < 0)
+			_selectedPageIndex = GUILayout.Toolbar(_selectedPageIndex, new string[] { "Settings", "Events" }, EditorStyles.miniButton);
+			EditorGUILayout.Space();
+			Rect rect = EditorGUILayout.GetControlRect(false, 1f);
+			EditorGUI.DrawRect(rect, EditorStyles.label.normal.textColor * 0.5f);
+			EditorGUILayout.Space();
+
+			if (_selectedPageIndex == 1)
 			{
-				EditorGUILayout.HelpBox("Action is deleted or changed its name.\n" + urlProp.stringValue, MessageType.Error);
-				if (GUILayout.Button("Reset Serialized Value"))
-				{
-					urlProp.stringValue = "";
-				}
-
-				EditorGUILayout.Space();
-
-				EditorGUILayout.BeginHorizontal();
-				_tempIndex = EditorGUILayout.Popup(_tempIndex, _displayUrls);
-				if (GUILayout.Button("Set As New"))
-				{
-					urlProp.stringValue = _allActions[_tempIndex].Url;
-				}
-				EditorGUILayout.EndHorizontal();
+				EditorGUILayout.PropertyField(serializedObject.FindProperty("_beforeReceiveData"));
+				EditorGUILayout.PropertyField(serializedObject.FindProperty("_afterReceiveData"));
 			}
 			else
 			{
-				index = EditorGUILayout.Popup("Presenter", index, _displayUrls);
-				urlProp.stringValue = _urls[index];
-			}
+				var urlProp = serializedObject.FindProperty("_url");
+				int index = 0;
+				if (!string.IsNullOrEmpty(urlProp.stringValue))
+					index = _urls.FindIndex(u => u == urlProp.stringValue);
+				if (index < 0)
+				{
+					EditorGUILayout.HelpBox("Action is deleted or changed its name.\n" + urlProp.stringValue, MessageType.Error);
+					if (GUILayout.Button("Reset Serialized Value"))
+					{
+						urlProp.stringValue = "";
+					}
 
-			if (index >= 0)
-			{
-				var isAsyncProperty = serializedObject.FindProperty("_async");
-				isAsyncProperty.boolValue = _allActions[index].IsAsync;
+					EditorGUILayout.Space();
 
-				DrawParameters(_allActions[index]);
-				DrawResponse(_allActions[index]);
+					EditorGUILayout.BeginHorizontal();
+					_tempIndex = EditorGUILayout.Popup(_tempIndex, _displayUrls);
+					if (GUILayout.Button("Set As New"))
+					{
+						urlProp.stringValue = _allActions[_tempIndex].Url;
+					}
+					EditorGUILayout.EndHorizontal();
+				}
+				else
+				{
+					index = EditorGUILayout.Popup("Presenter", index, _displayUrls);
+					urlProp.stringValue = _urls[index];
+				}
+
+				if (index >= 0)
+				{
+					var isAsyncProperty = serializedObject.FindProperty("_async");
+					isAsyncProperty.boolValue = _allActions[index].IsAsync;
+
+					DrawParameters(_allActions[index]);
+					DrawResponse(_allActions[index]);
+				}
 			}
 			serializedObject.ApplyModifiedProperties();
 		}
