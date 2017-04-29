@@ -5,34 +5,34 @@ using UnityEngine;
 
 namespace Haruna.UnityMVP.Examples
 {
+	[MvpModel(DisplayName = "Examples/DialogSettings")]
+	public class DialogSettings
+	{
+		[ModelProperty]
+		public bool ShowButton;
+		[ModelProperty]
+		public bool ShowTitle;
+		[ModelProperty]
+		public string Title;
+		[ModelProperty]
+		public string Content;
+		[ModelProperty]
+		public string ConfirmButtonStr;
+		[ModelProperty]
+		public string CancelButtonStr;
+		[ModelProperty]
+		public Action OnConfirm;
+		[ModelProperty]
+		public Action OnCancel;
+		[ModelProperty]
+		public bool CloseOnMaskClick;
+		[ModelProperty]
+		public Action OnMaskClick;
+	}
+
 	[Presenter]
 	public static class TestDialogPresenter
 	{
-		[MvpModel(DisplayName = "Examples/DialogSettings")]
-		public class DialogSettings
-		{
-			[ModelProperty]
-			public bool ShowButton;
-			[ModelProperty]
-			public bool ShowTitle;
-			[ModelProperty]
-			public string Title;
-			[ModelProperty]
-			public string Content;
-			[ModelProperty]
-			public string ConfirmButtonStr;
-			[ModelProperty]
-			public string CancelButtonStr;
-			[ModelProperty]
-			public Action OnConfirm;
-			[ModelProperty]
-			public Action OnCancel;
-			[ModelProperty]
-			public bool CloseOnMaskClick;
-			[ModelProperty]
-			public Action OnMaskClick;
-		}
-
 		[PresenterEvent(DisplayName = "Examples/Dialog.ShowDialogEvent")]
 		static PresenterEvent<DialogSettings> ShowDialogEvent = new PresenterEvent<DialogSettings>();
 		

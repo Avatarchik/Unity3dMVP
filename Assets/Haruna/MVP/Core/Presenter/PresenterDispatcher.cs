@@ -244,7 +244,7 @@ namespace Haruna.UnityMVP.Presenter
 			list.Add(register);
 		}
 
-		public void BroadcastEvent(string url, object[] data, bool needReceiver = false)
+		public void BroadcastEvent(string url, object[] data, Func<IOnPresenterBroadcast, bool> validater, bool needReceiver = false)
 		{
 			List<IOnPresenterBroadcast> list;
 			if (!_registedEvents.TryGetValue(url, out list))
@@ -254,16 +254,25 @@ namespace Haruna.UnityMVP.Presenter
 				else
 					return;
 			}
+
+			var toBroadCastEvent = validater == null ? list.ToArray() : list.Where(e => validater(e)).ToArray();
+			if (toBroadCastEvent.Count() == 0)
+			{
+				if (needReceiver)
+					throw new Exception("can not find registed event " + url);
+				else
+					return;
+			}
 			var toSendArgs = new List<MToken>();
-			for(var i = 0; i < data.Length; i++)
+			for (var i = 0; i < data.Length; i++)
 			{
 				var d = data[i];
 				var arg = d is MToken ? (MToken)d : MToken.FromObject(d);
 				toSendArgs.Add(arg);
 			}
-			for(var i = 0; i < list.Count; i++)
+			for (var i = 0; i < toBroadCastEvent.Length; i++)
 			{
-				var target = list[i];
+				var target = toBroadCastEvent[i];
 				target.OnEvent(toSendArgs.ToArray());
 			}
 		}

@@ -19,9 +19,9 @@ namespace Haruna.UnityMVP.Presenter
 	public class PresenterEventInfo
 	{
 		public string Url;
-		public Type PresenterType;
 		public string DisplayUrl;
 		public FieldInfo Field;
+		public Type PresenterClassType;
 	}
 
 	public static class PresenterUtil
@@ -96,14 +96,14 @@ namespace Haruna.UnityMVP.Presenter
 			foreach (var assembly in assemblies)
 			{
 				var types = assembly.GetTypes();
-				foreach (var type in types)
+				foreach (var classType in types)
 				{
-					if (type.GetCustomAttributes(typeof(PresenterAttribute), true).Length == 0)
+					if (classType.GetCustomAttributes(typeof(PresenterAttribute), true).Length == 0)
 						continue;
 
-					var presenterName = type.Name.EndsWith("Presenter") ?
-						type.Name.Substring(0, type.Name.LastIndexOf("Presenter")) : type.Name;
-					var fields = type.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+					var presenterName = classType.Name.EndsWith("Presenter") ?
+						classType.Name.Substring(0, classType.Name.LastIndexOf("Presenter")) : classType.Name;
+					var fields = classType.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
 
 					foreach (var field in fields)
 					{
@@ -118,8 +118,8 @@ namespace Haruna.UnityMVP.Presenter
 							{
 								var existed = _eventMapping[url];
 								Debug.LogErrorFormat("Url duplicate {0}.\n{1}, {2}.{3} \n{4}, {5}.{6}", url,
-									existed.PresenterType.Assembly.FullName, existed.PresenterType.FullName, existed.Field.Name,
-									assembly.FullName, type.FullName, field.Name);
+									existed.PresenterClassType.Assembly.FullName, existed.PresenterClassType.FullName, existed.Field.Name,
+									assembly.FullName, classType.FullName, field.Name);
 							}
 							else
 							{
@@ -127,8 +127,8 @@ namespace Haruna.UnityMVP.Presenter
 								{
 									Url = url,
 									DisplayUrl = ((PresenterEventAttribute)(eventAttrs[0])).DisplayName,
-									PresenterType = type,
-									Field = field
+									Field = field,
+									PresenterClassType = classType
 								};
 								_eventMapping.Add(url, eventInfo);
 							}

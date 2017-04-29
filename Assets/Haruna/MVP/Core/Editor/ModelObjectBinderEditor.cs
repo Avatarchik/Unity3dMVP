@@ -57,42 +57,7 @@ namespace Haruna.UnityMVP.Model
 				_modelTypeProperty.stringValue = temp.Value.TypeString;
 				DrawSerializeFields(temp.Value.Type);
 			}
-
-			//int index = _avaliableModels.FindIndex(d => d.TypeString == _modelTypeProperty.stringValue);
-
-			//if (index < 0 && !string.IsNullOrEmpty(_modelTypeProperty.stringValue))
-			//{
-			//	var displayTypeString = _modelTypeProperty.stringValue;
-			//	var temp = displayTypeString.Split(';');
-			//	if (temp.Length == 2)
-			//	{
-			//		displayTypeString = temp[0] + "\n" + temp[1];
-			//	}
-			//	EditorGUILayout.HelpBox("Serialized Value Error. Model Type is not exist\n" + displayTypeString, MessageType.Error, true);
-			//	if (GUILayout.Button("Reset Serialized Value"))
-			//	{
-			//		_modelTypeProperty.stringValue = "";
-			//	}
-
-			//	EditorGUILayout.Space();
-			//	EditorGUILayout.BeginHorizontal();
-			//	_tempIndex = EditorGUILayout.Popup(_tempIndex, _avaliableModelTypes);
-			//	if (GUILayout.Button("Set As New"))
-			//	{
-			//		_modelTypeProperty.stringValue = _avaliableModels[_tempIndex].TypeString;
-			//	}
-			//	EditorGUILayout.EndHorizontal();
-			//}
-			//else
-			//{
-			//	if (index < 0) index = 0;
-
-			//	index = EditorGUILayout.Popup("Model Type", index, _avaliableModelTypes);
-
-			//	_modelTypeProperty.stringValue = _avaliableModels[index].TypeString;
-			//	DrawSerializeFields(_avaliableModels[index].ReflectionType);
-			//}
-
+			
 			serializedObject.ApplyModifiedProperties();
 		}
 

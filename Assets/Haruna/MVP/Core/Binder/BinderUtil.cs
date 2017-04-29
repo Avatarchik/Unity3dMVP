@@ -132,6 +132,9 @@ namespace Haruna.UnityMVP.Model
 
 		public static bool IsUnityEventHasError(UnityEngine.Events.UnityEventBase ev)
 		{
+			if (ev == null)
+				return true;
+
 			var count = ev.GetPersistentEventCount();
 			for (var i = 0; i < count; i++)
 			{

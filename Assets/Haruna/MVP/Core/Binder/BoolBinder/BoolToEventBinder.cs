@@ -8,6 +8,7 @@ namespace Haruna.UnityMVP.Model
 	[AddComponentMenu("UnityMVP/Binder/Bool/BoolToEventBinder")]
 	public class BoolToEventBinder : MonoBehaviour, IMvpBoolBinder
 	{
+		[Serializable]
 		public class BoolUnityEvent : UnityEvent<bool> { }
 
 		[SerializeField]

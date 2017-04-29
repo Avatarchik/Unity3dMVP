@@ -9,6 +9,7 @@ namespace Haruna.UnityMVP.Presenter
 	public interface IOnPresenterBroadcast
 	{
 		void OnEvent(params MToken[] data);
+		MToken[] GetRegistConditionData();
 	}
 
 	[AddComponentMenu("UnityMVP/Linker/PresenterEventLinker")]
@@ -16,6 +17,9 @@ namespace Haruna.UnityMVP.Presenter
 	{
 		[SerializeField]
 		string _url;
+
+		[SerializeField]
+		List<Component> _registConditionBinders;
 
 		[SerializeField]
 		List<Component> _eventParameterBinders;
@@ -48,6 +52,11 @@ namespace Haruna.UnityMVP.Presenter
 		public void RegistEvent()
 		{
 			PresenterDispatcher.GetInstance().RegistPresenterEvent(_url, this);
+		}
+
+		public MToken[] GetRegistConditionData()
+		{
+			return _registConditionBinders.Select(r => BinderUtil.GetValueFromBinder(r)).ToArray();
 		}
 
 		public bool HasEditorError()

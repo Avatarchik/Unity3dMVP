@@ -10,8 +10,6 @@ namespace Haruna.UnityMVP.Model
 	{
 		[SerializeField]
 		ArrayElementBinder _arrayElementTemplate;
-		[SerializeField]
-		UnityEvent _afterReceiveTemplateEvent;
 
 		List<ArrayElementBinder> _elements = new List<ArrayElementBinder>();
 		
