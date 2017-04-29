@@ -100,11 +100,6 @@ namespace Haruna.UnityMVP.Presenter
 			if (parameterLength == 0)
 			{
 				EditorGUILayout.HelpBox("No parameter to send", MessageType.Info);
-
-				while (binderProperties.arraySize > 0)
-				{
-					binderProperties.DeleteArrayElementAtIndex(0);
-				}
 			}
 			else
 			{
@@ -122,10 +117,9 @@ namespace Haruna.UnityMVP.Presenter
 						parameter.Name, requireBinderInfo.ValueTypeName, binderProperty.objectReferenceValue, requireBinderInfo.InterfaceType);
 				}
 			}
-			for (var i = parameters.Length; i < binderProperties.arraySize; i++)
-			{
+			while (binderProperties.arraySize > parameters.Length)
 				binderProperties.DeleteArrayElementAtIndex(parameters.Length);
-			}
+
 			EditorGUI.indentLevel--;
 		}
 
@@ -158,16 +152,16 @@ namespace Haruna.UnityMVP.Presenter
 				retTypeList.Add(action.Method.ReturnType);
 			}
 
+			var binderListProperty = serializedObject.FindProperty("_responseDataBinder");
+			while (binderListProperty.arraySize > retTypeList.Count)
+				binderListProperty.DeleteArrayElementAtIndex(retTypeList.Count);
+
 			if (retTypeList.Count == 0)
 			{
 				EditorGUILayout.HelpBox("No response data", MessageType.Info);
-				var binderListProperty = serializedObject.FindProperty("_responseDataBinder");
-				while (binderListProperty.arraySize > 0)
-					binderListProperty.DeleteArrayElementAtIndex(0);
 			}
 			else
 			{
-				var binderListProperty = serializedObject.FindProperty("_responseDataBinder");
 				for (var i = 0; i < retTypeList.Count; i++)
 				{
 					if (binderListProperty.arraySize <= i)
@@ -177,41 +171,12 @@ namespace Haruna.UnityMVP.Presenter
 					var retType = retTypeList[i];
 					
 					var requireBinderInfo = BinderUtil.GetRequireBinderInfoByValueType(retType);
-
-					//if (retTypeList.GetInterface(typeof(IPresenterResponse).FullName) != null
-					//	|| retTypeList == typeof(MToken) || retTypeList.IsSubclassOf(typeof(MToken)))
-					//{
-					//	binderProperty.objectReferenceValue = EditorKit.DrawBinderField(
-					//		"Return Value", "dynamic", binderProperty.objectReferenceValue, null);
-					//}
-					//else
-					//{
-					//	var binderInfo = BinderUtil.GetRequireBinderInfoByValueType(retTypeList);
-					//	binderProperty.objectReferenceValue = EditorKit.DrawBinderField(
-					//		"Return Value", binderInfo.ValueTypeName, binderProperty.objectReferenceValue, binderInfo.InterfaceType);
-					//}
-
+					
 					binderProperty.objectReferenceValue = EditorKit.DrawBinderField(
 						"return " + i, requireBinderInfo.ValueTypeName, binderProperty.objectReferenceValue, requireBinderInfo.InterfaceType);
 				}
-				//if (binderListProperty.arraySize == 0)
-				//	binderListProperty.InsertArrayElementAtIndex(0);
-
-				//var binderProperty = binderListProperty.GetArrayElementAtIndex(0);
-
-				//if (retTypeList.GetInterface(typeof(IPresenterResponse).FullName) != null
-				//	|| retTypeList == typeof(MToken) || retTypeList.IsSubclassOf(typeof(MToken)))
-				//{
-				//	binderProperty.objectReferenceValue = EditorKit.DrawBinderField(
-				//		"Return Value", "dynamic", binderProperty.objectReferenceValue, null);
-				//}
-				//else
-				//{
-				//	var binderInfo = BinderUtil.GetRequireBinderInfoByValueType(retTypeList);
-				//	binderProperty.objectReferenceValue = EditorKit.DrawBinderField(
-				//		"Return Value", binderInfo.ValueTypeName, binderProperty.objectReferenceValue, binderInfo.InterfaceType);
-				//}
 			}
+
 			EditorGUI.indentLevel--;
 		}
 	}

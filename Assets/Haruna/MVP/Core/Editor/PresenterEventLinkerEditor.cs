@@ -87,6 +87,11 @@ namespace Haruna.UnityMVP.Presenter
 			EditorGUI.indentLevel++;
 
 			var parameters = action.Field.FieldType.GetGenericArguments();
+
+			var binderProperties = serializedObject.FindProperty("_eventParameterBinders");
+			while (binderProperties.arraySize > parameters.Length)
+				binderProperties.DeleteArrayElementAtIndex(parameters.Length);
+
 			if (parameters.Length == 0)
 			{
 				EditorGUILayout.HelpBox("No parameter data", MessageType.Error);
@@ -94,8 +99,6 @@ namespace Haruna.UnityMVP.Presenter
 			}
 			else
 			{
-				var binderProperties = serializedObject.FindProperty("_eventParameterBinders");
-
 				for (var i = 0; i < parameters.Length; i++)
 				{
 					if (binderProperties.arraySize <= i)
@@ -107,10 +110,6 @@ namespace Haruna.UnityMVP.Presenter
 					var requireBinderInfo = BinderUtil.GetRequireBinderInfoByValueType(parameterType);
 					binderProperty.objectReferenceValue = EditorKit.DrawBinderField(
 						i.ToString(), requireBinderInfo.ValueTypeName, binderProperty.objectReferenceValue, requireBinderInfo.InterfaceType);
-				}
-				for (var i = parameters.Length; i < binderProperties.arraySize; i++)
-				{
-					binderProperties.DeleteArrayElementAtIndex(parameters.Length);
 				}
 			}
 			EditorGUI.indentLevel--;
