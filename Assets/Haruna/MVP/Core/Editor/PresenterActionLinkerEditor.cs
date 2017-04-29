@@ -108,7 +108,6 @@ namespace Haruna.UnityMVP.Presenter
 			}
 			else
 			{
-
 				for(var i = 0; i < parameterLength; i++)
 				{
 					if (binderProperties.arraySize <= i)
@@ -135,7 +134,7 @@ namespace Haruna.UnityMVP.Presenter
 			EditorGUILayout.LabelField("Responese");
 			EditorGUI.indentLevel++;
 
-			Type retType = null;
+			List<Type> retTypeList = new List<Type>();
 			if (action.IsAsync)
 			{
 				var parameters = action.Method.GetParameters();
@@ -143,13 +142,9 @@ namespace Haruna.UnityMVP.Presenter
 				if (lastParam.ParameterType == typeof(AsyncReturn) || lastParam.ParameterType.IsSubclassOf(typeof(AsyncReturn)))
 				{
 					var genericTypes = lastParam.ParameterType.GetGenericArguments();
-					if(genericTypes.Length == 0)
+					foreach(var gt in genericTypes)
 					{
-						retType = typeof(void);
-					}
-					else
-					{
-						retType = genericTypes[0];
+						retTypeList.Add(gt);
 					}
 				}
 				else
@@ -158,35 +153,64 @@ namespace Haruna.UnityMVP.Presenter
 					return;
 				}
 			}
-			else
+			else if(action.Method.ReturnType != typeof(void))
 			{
-				retType = action.Method.ReturnType;
+				retTypeList.Add(action.Method.ReturnType);
 			}
 
-			if (retType == typeof(void))
+			if (retTypeList.Count == 0)
 			{
 				EditorGUILayout.HelpBox("No response data", MessageType.Info);
+				var binderListProperty = serializedObject.FindProperty("_responseDataBinder");
+				while (binderListProperty.arraySize > 0)
+					binderListProperty.DeleteArrayElementAtIndex(0);
 			}
 			else
 			{
 				var binderListProperty = serializedObject.FindProperty("_responseDataBinder");
-				if (binderListProperty.arraySize == 0)
-					binderListProperty.InsertArrayElementAtIndex(0);
-
-				var binderProperty = binderListProperty.GetArrayElementAtIndex(0);
-
-				if (retType.GetInterface(typeof(IPresenterResponse).FullName) != null
-					|| retType == typeof(MToken) || retType.IsSubclassOf(typeof(MToken)))
+				for (var i = 0; i < retTypeList.Count; i++)
 				{
+					if (binderListProperty.arraySize <= i)
+						binderListProperty.InsertArrayElementAtIndex(i);
+
+					var binderProperty = binderListProperty.GetArrayElementAtIndex(i);
+					var retType = retTypeList[i];
+					
+					var requireBinderInfo = BinderUtil.GetRequireBinderInfoByValueType(retType);
+
+					//if (retTypeList.GetInterface(typeof(IPresenterResponse).FullName) != null
+					//	|| retTypeList == typeof(MToken) || retTypeList.IsSubclassOf(typeof(MToken)))
+					//{
+					//	binderProperty.objectReferenceValue = EditorKit.DrawBinderField(
+					//		"Return Value", "dynamic", binderProperty.objectReferenceValue, null);
+					//}
+					//else
+					//{
+					//	var binderInfo = BinderUtil.GetRequireBinderInfoByValueType(retTypeList);
+					//	binderProperty.objectReferenceValue = EditorKit.DrawBinderField(
+					//		"Return Value", binderInfo.ValueTypeName, binderProperty.objectReferenceValue, binderInfo.InterfaceType);
+					//}
+
 					binderProperty.objectReferenceValue = EditorKit.DrawBinderField(
-						"Return Value", "dynamic", binderProperty.objectReferenceValue, null);
+						"return " + i, requireBinderInfo.ValueTypeName, binderProperty.objectReferenceValue, requireBinderInfo.InterfaceType);
 				}
-				else
-				{
-					var binderInfo = BinderUtil.GetRequireBinderInfoByValueType(retType);
-					binderProperty.objectReferenceValue = EditorKit.DrawBinderField(
-						"Return Value", binderInfo.ValueTypeName, binderProperty.objectReferenceValue, binderInfo.InterfaceType);
-				}
+				//if (binderListProperty.arraySize == 0)
+				//	binderListProperty.InsertArrayElementAtIndex(0);
+
+				//var binderProperty = binderListProperty.GetArrayElementAtIndex(0);
+
+				//if (retTypeList.GetInterface(typeof(IPresenterResponse).FullName) != null
+				//	|| retTypeList == typeof(MToken) || retTypeList.IsSubclassOf(typeof(MToken)))
+				//{
+				//	binderProperty.objectReferenceValue = EditorKit.DrawBinderField(
+				//		"Return Value", "dynamic", binderProperty.objectReferenceValue, null);
+				//}
+				//else
+				//{
+				//	var binderInfo = BinderUtil.GetRequireBinderInfoByValueType(retTypeList);
+				//	binderProperty.objectReferenceValue = EditorKit.DrawBinderField(
+				//		"Return Value", binderInfo.ValueTypeName, binderProperty.objectReferenceValue, binderInfo.InterfaceType);
+				//}
 			}
 			EditorGUI.indentLevel--;
 		}

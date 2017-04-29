@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 
 namespace Haruna.UnityMVP.Model
-{	
+{
 	public class RequireBinderInfo
 	{
 		public MTokenType TokenType;
@@ -54,7 +54,7 @@ namespace Haruna.UnityMVP.Model
 				var temp = new ModelPropertyInfo();
 				temp.MemberInfo = memberInfo;
 				temp.BinderInfo = GetRequireBinderInfoByValueType(TypeUtil.GetFieldOrPropertyType(memberInfo));
-				
+
 				ret.Add(memberInfo.Name, temp);
 			}
 			return ret;
@@ -64,7 +64,7 @@ namespace Haruna.UnityMVP.Model
 		{
 			var temp = new RequireBinderInfo();
 			temp.ValueType = valueType;
-			if(temp.ValueType == typeof(MToken) || temp.ValueType.IsSubclassOf(typeof(MToken)))
+			if (temp.ValueType == typeof(MToken) || temp.ValueType.IsSubclassOf(typeof(MToken)))
 			{
 				temp.TokenType = MTokenType.Dynamic;
 				temp.ValueTypeName = "dynamic";
@@ -114,15 +114,8 @@ namespace Haruna.UnityMVP.Model
 
 		public static void SetValueToBinder(MToken value, UnityEngine.Object binderObject)
 		{
-			try
-			{
-				var method = binderObject.GetType().GetMethod("SetData");
-				method.Invoke(binderObject, new object[] { value });
-			}
-			catch (Exception e)
-			{
-				UnityEngine.Debug.LogException(e);
-			}
+			var method = binderObject.GetType().GetMethod("SetData");
+			method.Invoke(binderObject, new object[] { value });
 		}
 
 		public static MToken GetValueFromBinder(UnityEngine.Object binderObject)
@@ -151,8 +144,8 @@ namespace Haruna.UnityMVP.Model
 					return true;
 
 				var type = target.GetType();
-				if (type.GetMethod(methodName, BindingFlags.Instance | BindingFlags.Static 
-					| BindingFlags.Public | BindingFlags.NonPublic) == null)
+				if (type.GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
+					.All(m => m.Name != methodName))
 					return true;
 			}
 			return false;
