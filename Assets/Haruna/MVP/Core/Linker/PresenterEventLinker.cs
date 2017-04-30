@@ -53,6 +53,10 @@ namespace Haruna.UnityMVP.Presenter
 		{
 			PresenterDispatcher.GetInstance().RegistPresenterEvent(_url, this);
 		}
+		public void UnregistEvent()
+		{
+			PresenterDispatcher.UnregistPresenterEvent(_url, this);
+		}
 
 		public MToken[] GetRegistConditionData()
 		{
@@ -70,6 +74,11 @@ namespace Haruna.UnityMVP.Presenter
 
 			return BinderUtil.IsUnityEventHasError(_beforeReceiveData)
 				|| BinderUtil.IsUnityEventHasError(_afterReceiveData);
+		}
+
+		void OnDestroy()
+		{
+			UnregistEvent();
 		}
 	}
 }

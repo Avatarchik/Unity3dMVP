@@ -77,7 +77,7 @@ namespace Haruna.UnityMVP.Model
 				if (templateInterfaceType != null)
 				{
 					EditorGUILayout.BeginHorizontal();
-					EditorGUILayout.PrefixLabel("Array Element Template");
+					EditorGUILayout.PrefixLabel("Element Binder");
 					templateProperty.objectReferenceValue = EditorKit.DrawBinderField("", templateProperty.objectReferenceValue, templateInterfaceType);
 					EditorGUILayout.EndHorizontal();
 				}

@@ -84,6 +84,12 @@ namespace Haruna.UnityMVP.Model
 					temp.ValueTypeName = "float";
 				}
 			}
+			else if (temp.ValueType.IsEnum)
+			{
+				temp.InterfaceType = typeof(IMvpFloatBinder);
+				temp.TokenType = MTokenType.Float;
+				temp.ValueTypeName = "enum";
+			}
 			else if (temp.ValueType == typeof(string))
 			{
 				temp.InterfaceType = typeof(IMvpStringBinder);

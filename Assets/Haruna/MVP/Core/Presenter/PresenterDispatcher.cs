@@ -24,7 +24,7 @@ namespace Haruna.UnityMVP.Presenter
 		}
 		
 		Dictionary<string, PresenterActionInfo> _actionMapping;
-		Dictionary<string, List<IOnPresenterBroadcast>> _registedEvents = new Dictionary<string, List<IOnPresenterBroadcast>>();
+		Dictionary<string, List<Component>> _registedEvents = new Dictionary<string, List<Component>>();
 
 		class AsyncActionTask
 		{
@@ -233,20 +233,32 @@ namespace Haruna.UnityMVP.Presenter
 			}
 		}
 
-		public void RegistPresenterEvent(string url, IOnPresenterBroadcast register)
+		public void RegistPresenterEvent(string url, IOnPresenterBroadcast eventLinker)
 		{
-			List<IOnPresenterBroadcast> list;
+			List<Component> list;
 			if(!_registedEvents.TryGetValue(url, out list))
 			{
-				list = new List<IOnPresenterBroadcast>();
+				list = new List<Component>();
 				_registedEvents.Add(url, list);
 			}
-			list.Add(register);
+			list.Add((Component)eventLinker);
+		}
+
+		public static void UnregistPresenterEvent(string url, IOnPresenterBroadcast eventLinker)
+		{
+			if (_instance == null)
+				return;
+
+			List<Component> list;
+			if (_instance._registedEvents.TryGetValue(url, out list))
+			{
+				list.Remove((Component)eventLinker);
+			}
 		}
 
 		public void BroadcastEvent(string url, object[] data, Func<IOnPresenterBroadcast, bool> validater, bool needReceiver = false)
 		{
-			List<IOnPresenterBroadcast> list;
+			List<Component> list;
 			if (!_registedEvents.TryGetValue(url, out list))
 			{
 				if (needReceiver)
@@ -254,8 +266,9 @@ namespace Haruna.UnityMVP.Presenter
 				else
 					return;
 			}
+			list.RemoveAll(linker => linker == null);
 
-			var toBroadCastEvent = validater == null ? list.ToArray() : list.Where(e => validater(e)).ToArray();
+			var toBroadCastEvent = validater == null ? list : list.Where(e => validater((IOnPresenterBroadcast)e)).ToList();
 			if (toBroadCastEvent.Count() == 0)
 			{
 				if (needReceiver)
@@ -270,9 +283,10 @@ namespace Haruna.UnityMVP.Presenter
 				var arg = d is MToken ? (MToken)d : MToken.FromObject(d);
 				toSendArgs.Add(arg);
 			}
-			for (var i = 0; i < toBroadCastEvent.Length; i++)
+
+			for (var i = 0; i < toBroadCastEvent.Count; i++)
 			{
-				var target = toBroadCastEvent[i];
+				var target = toBroadCastEvent[i] as IOnPresenterBroadcast;
 				target.OnEvent(toSendArgs.ToArray());
 			}
 		}

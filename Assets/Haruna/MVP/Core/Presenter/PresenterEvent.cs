@@ -62,15 +62,20 @@ namespace Haruna.UnityMVP.Presenter
 		}
 	}
 
-	public class PresenterEventWithIndex<T> : PresenterEvent
+	public class PresenterEventWithIndex : PresenterEvent
 	{
 		public override Dictionary<string, Type> ConditionTypes
 		{
-			get
-			{
-				return new Dictionary<string, Type>() { { "Index", typeof(float) } };
-			}
+			get { return new Dictionary<string, Type>() { { "Index", typeof(float) } }; }
 		}
+
+		public void Broadcast(int index, bool needReceiver = false)
+		{
+			PresenterDispatcher.GetInstance().BroadcastEvent(Url, new object[] { }, c => ((MFloat)c).Value == index, needReceiver);
+		}
+	}
+	public class PresenterEventWithIndex<T> : PresenterEventWithIndex
+	{
 		public override Dictionary<string, Type> ParameterTypes
 		{
 			get { return new Dictionary<string, Type>() { { "arg", typeof(T) } }; }
@@ -81,15 +86,20 @@ namespace Haruna.UnityMVP.Presenter
 			PresenterDispatcher.GetInstance().BroadcastEvent(Url, new object[] { arg }, c => ((MFloat)c).Value == index, needReceiver);
 		}
 	}
-	public class PresenterEventWithIdentity<T> : PresenterEvent
+	public class PresenterEventWithIdentity : PresenterEvent
 	{
 		public override Dictionary<string, Type> ConditionTypes
 		{
-			get
-			{
-				return new Dictionary<string, Type>() { { "ID", typeof(string) } };
-			}
+			get { return new Dictionary<string, Type>() { { "ID", typeof(string) } }; }
 		}
+
+		public void Broadcast(string id, bool needReceiver = false)
+		{
+			PresenterDispatcher.GetInstance().BroadcastEvent(Url, new object[] { }, c => ((MString)c).Value == id, needReceiver);
+		}
+	}
+	public class PresenterEventWithIdentity<T> : PresenterEventWithIdentity
+	{
 		public override Dictionary<string, Type> ParameterTypes
 		{
 			get { return new Dictionary<string, Type>() { { "arg", typeof(T) } }; }

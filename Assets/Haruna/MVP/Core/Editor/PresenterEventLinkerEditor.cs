@@ -130,7 +130,7 @@ namespace Haruna.UnityMVP.Presenter
 
 			if (parameterTypes.Count == 0)
 			{
-				EditorGUILayout.HelpBox("No parameter data", MessageType.Error);
+				EditorGUILayout.HelpBox("No parameter data", MessageType.Info);
 			}
 			else
 			{
