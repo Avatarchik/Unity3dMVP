@@ -24,7 +24,7 @@ namespace Haruna.UnityMVP.Presenter
 		}
 		
 		Dictionary<string, PresenterActionInfo> _actionMapping;
-		Dictionary<string, List<IOnPresenterBroadcast>> _registedEvents = new Dictionary<string, List<IOnPresenterBroadcast>>();
+		Dictionary<string, List<Component>> _registedEvents = new Dictionary<string, List<Component>>();
 
 		class AsyncActionTask
 		{
@@ -233,20 +233,20 @@ namespace Haruna.UnityMVP.Presenter
 			}
 		}
 
-		public void RegistPresenterEvent(string url, IOnPresenterBroadcast register)
+		public void RegistPresenterEvent(string url, IOnPresenterBroadcast linker)
 		{
-			List<IOnPresenterBroadcast> list;
+			List<Component> list;
 			if(!_registedEvents.TryGetValue(url, out list))
 			{
-				list = new List<IOnPresenterBroadcast>();
+				list = new List<Component>();
 				_registedEvents.Add(url, list);
 			}
-			list.Add(register);
+			list.Add((Component)linker);
 		}
 
 		public void BroadcastEvent(string url, object[] data, bool needReceiver = false)
 		{
-			List<IOnPresenterBroadcast> list;
+			List<Component> list;
 			if (!_registedEvents.TryGetValue(url, out list))
 			{
 				if (needReceiver)
@@ -255,16 +255,18 @@ namespace Haruna.UnityMVP.Presenter
 					return;
 			}
 			var toSendArgs = new List<MToken>();
-			for(var i = 0; i < data.Length; i++)
+			for (var i = 0; i < data.Length; i++)
 			{
 				var d = data[i];
 				var arg = d is MToken ? (MToken)d : MToken.FromObject(d);
 				toSendArgs.Add(arg);
 			}
-			for(var i = 0; i < list.Count; i++)
+
+			list.RemoveAll(l => l == null);
+			for (var i = 0; i < list.Count; i++)
 			{
 				var target = list[i];
-				target.OnEvent(toSendArgs.ToArray());
+				((IOnPresenterBroadcast)target).OnEvent(toSendArgs.ToArray());
 			}
 		}
 	}

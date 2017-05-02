@@ -1,4 +1,5 @@
 ﻿using Haruna.UnityMVP.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -27,23 +28,32 @@ namespace Haruna.UnityMVP.Presenter
 
 		public void OnEvent(params MToken[] data)
 		{
-			if (_beforeReceiveData != null)
-				_beforeReceiveData.Invoke();
-
-			if (data.Length != _eventParameterBinders.Count)
+			try
 			{
-				Debug.LogErrorFormat(this, "parameter count {0} is not equal with binders coutn {1}", _eventParameterBinders.Count);
-				return;
-			}
+				if (_beforeReceiveData != null)
+					_beforeReceiveData.Invoke();
 
-			for (var i = 0; i < _eventParameterBinders.Count; i++)
+				if (data.Length != _eventParameterBinders.Count)
+				{
+					Debug.LogErrorFormat(this, "parameter count {0} is not equal with binders coutn {1}", _eventParameterBinders.Count);
+					return;
+				}
+
+				for (var i = 0; i < _eventParameterBinders.Count; i++)
+				{
+					BinderUtil.SetValueToBinder(data[i], _eventParameterBinders[i]);
+				}
+
+				if (_afterReceiveData != null)
+					_afterReceiveData.Invoke();
+			}
+			catch (Exception e)
 			{
-				BinderUtil.SetValueToBinder(data[i], _eventParameterBinders[i]);
+				Debug.LogErrorFormat(this, e.Message);
+				Debug.LogException(e);
 			}
-
-			if (_afterReceiveData != null)
-				_afterReceiveData.Invoke();
 		}
+
 
 		public void RegistEvent()
 		{

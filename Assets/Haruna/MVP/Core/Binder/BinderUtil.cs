@@ -114,15 +114,8 @@ namespace Haruna.UnityMVP.Model
 
 		public static void SetValueToBinder(MToken value, UnityEngine.Object binderObject)
 		{
-			try
-			{
-				var method = binderObject.GetType().GetMethod("SetData");
-				method.Invoke(binderObject, new object[] { value });
-			}
-			catch (Exception e)
-			{
-				UnityEngine.Debug.LogException(e);
-			}
+			var method = binderObject.GetType().GetMethod("SetData");
+			method.Invoke(binderObject, new object[] { value });
 		}
 
 		public static MToken GetValueFromBinder(UnityEngine.Object binderObject)
@@ -139,6 +132,9 @@ namespace Haruna.UnityMVP.Model
 
 		public static bool IsUnityEventHasError(UnityEngine.Events.UnityEventBase ev)
 		{
+			if (ev == null)
+				return true;
+
 			var count = ev.GetPersistentEventCount();
 			for (var i = 0; i < count; i++)
 			{
@@ -151,8 +147,8 @@ namespace Haruna.UnityMVP.Model
 					return true;
 
 				var type = target.GetType();
-				if (type.GetMethod(methodName, BindingFlags.Instance | BindingFlags.Static 
-					| BindingFlags.Public | BindingFlags.NonPublic) == null)
+				if (type.GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
+					.All(m => m.Name != methodName))
 					return true;
 			}
 			return false;

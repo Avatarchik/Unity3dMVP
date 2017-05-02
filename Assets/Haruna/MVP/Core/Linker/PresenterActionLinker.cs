@@ -20,7 +20,7 @@ namespace Haruna.UnityMVP.Presenter
 
 		[SerializeField]
 		List<Component> _responseDataBinder;
-		
+
 		[SerializeField]
 		UnityEvent _beforeReceiveData;
 		[SerializeField]
@@ -42,23 +42,31 @@ namespace Haruna.UnityMVP.Presenter
 
 		void OnResponse(IPresenterResponse res)
 		{
-			_beforeReceiveData.Invoke();
-			if (res.StatusCode == 200)
+			try
 			{
-				if (res.Data != null)
+				_beforeReceiveData.Invoke();
+				if (res.StatusCode == 200)
 				{
-					for(var i = 0; i < _responseDataBinder.Count; i++)
+					if (res.Data != null)
 					{
-						BinderUtil.SetValueToBinder(res.Data[i], _responseDataBinder[i]);
+						for (var i = 0; i < _responseDataBinder.Count; i++)
+						{
+							BinderUtil.SetValueToBinder(res.Data[i], _responseDataBinder[i]);
+						}
 					}
 				}
-			}
-			else
-			{
-				Debug.LogWarningFormat(this, "Local request {0} returned with error. code {1} : {2}", _url, res.StatusCode, res.ErrorMessage);
-			}
+				else
+				{
+					Debug.LogWarningFormat(this, "Local request {0} returned with error. code {1} : {2}", _url, res.StatusCode, res.ErrorMessage);
+				}
 
-			_afterReceiveData.Invoke();
+				_afterReceiveData.Invoke();
+			}
+			catch (Exception e)
+			{
+				Debug.LogErrorFormat(this, e.Message);
+				Debug.LogException(e);
+			}
 		}
 
 		public bool HasEditorError()
@@ -70,7 +78,7 @@ namespace Haruna.UnityMVP.Presenter
 			if (_toSendDataBinders.Any(b => b == null)
 				|| _responseDataBinder.Any(b => b == null))
 				return true;
-			
+
 			return BinderUtil.IsUnityEventHasError(_beforeReceiveData)
 				|| BinderUtil.IsUnityEventHasError(_afterReceiveData);
 		}

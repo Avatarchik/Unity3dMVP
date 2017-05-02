@@ -25,8 +25,8 @@ namespace Haruna.UnityMVP.Model
 
 		public MBool GetData()
 		{
-			Debug.LogWarningFormat(this, "Get data from BoolToEventBinder.");
-			return _value;
+			//Debug.LogWarningFormat(this, "Get data from BoolToEventBinder.");
+			return gameObject.activeSelf;
 		}
 
 		public bool HasEditorError()
