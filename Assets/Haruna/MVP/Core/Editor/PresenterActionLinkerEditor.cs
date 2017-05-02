@@ -159,10 +159,6 @@ namespace Haruna.UnityMVP.Presenter
 			if (retTypeList.Count == 0)
 			{
 				EditorGUILayout.HelpBox("No response data", MessageType.Info);
-
-				var binderListProperty = serializedObject.FindProperty("_responseDataBinder");
-				while (binderListProperty.arraySize > 0)
-					binderListProperty.DeleteArrayElementAtIndex(0);
 			}
 			else
 			{
