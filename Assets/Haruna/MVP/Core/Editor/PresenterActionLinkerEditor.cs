@@ -100,15 +100,9 @@ namespace Haruna.UnityMVP.Presenter
 			if (parameterLength == 0)
 			{
 				EditorGUILayout.HelpBox("No parameter to send", MessageType.Info);
-
-				while (binderProperties.arraySize > 0)
-				{
-					binderProperties.DeleteArrayElementAtIndex(0);
-				}
 			}
 			else
 			{
-
 				for(var i = 0; i < parameterLength; i++)
 				{
 					if (binderProperties.arraySize <= i)
@@ -123,10 +117,9 @@ namespace Haruna.UnityMVP.Presenter
 						parameter.Name, requireBinderInfo.ValueTypeName, binderProperty.objectReferenceValue, requireBinderInfo.InterfaceType);
 				}
 			}
-			for (var i = parameters.Length; i < binderProperties.arraySize; i++)
-			{
+			while (binderProperties.arraySize > parameters.Length)
 				binderProperties.DeleteArrayElementAtIndex(parameters.Length);
-			}
+
 			EditorGUI.indentLevel--;
 		}
 
@@ -135,7 +128,7 @@ namespace Haruna.UnityMVP.Presenter
 			EditorGUILayout.LabelField("Responese");
 			EditorGUI.indentLevel++;
 
-			Type retType = null;
+			List<Type> retTypeList = new List<Type>();
 			if (action.IsAsync)
 			{
 				var parameters = action.Method.GetParameters();
@@ -143,13 +136,9 @@ namespace Haruna.UnityMVP.Presenter
 				if (lastParam.ParameterType == typeof(AsyncReturn) || lastParam.ParameterType.IsSubclassOf(typeof(AsyncReturn)))
 				{
 					var genericTypes = lastParam.ParameterType.GetGenericArguments();
-					if(genericTypes.Length == 0)
+					foreach(var gt in genericTypes)
 					{
-						retType = typeof(void);
-					}
-					else
-					{
-						retType = genericTypes[0];
+						retTypeList.Add(gt);
 					}
 				}
 				else
@@ -158,12 +147,16 @@ namespace Haruna.UnityMVP.Presenter
 					return;
 				}
 			}
-			else
+			else if(action.Method.ReturnType != typeof(void))
 			{
-				retType = action.Method.ReturnType;
+				retTypeList.Add(action.Method.ReturnType);
 			}
 
-			if (retType == typeof(void))
+			var binderListProperty = serializedObject.FindProperty("_responseDataBinder");
+			while (binderListProperty.arraySize > retTypeList.Count)
+				binderListProperty.DeleteArrayElementAtIndex(retTypeList.Count);
+
+			if (retTypeList.Count == 0)
 			{
 				EditorGUILayout.HelpBox("No response data", MessageType.Info);
 
@@ -173,25 +166,21 @@ namespace Haruna.UnityMVP.Presenter
 			}
 			else
 			{
-				var binderListProperty = serializedObject.FindProperty("_responseDataBinder");
-				if (binderListProperty.arraySize == 0)
-					binderListProperty.InsertArrayElementAtIndex(0);
-
-				var binderProperty = binderListProperty.GetArrayElementAtIndex(0);
-
-				if (retType.GetInterface(typeof(IPresenterResponse).FullName) != null
-					|| retType == typeof(MToken) || retType.IsSubclassOf(typeof(MToken)))
+				for (var i = 0; i < retTypeList.Count; i++)
 				{
+					if (binderListProperty.arraySize <= i)
+						binderListProperty.InsertArrayElementAtIndex(i);
+
+					var binderProperty = binderListProperty.GetArrayElementAtIndex(i);
+					var retType = retTypeList[i];
+					
+					var requireBinderInfo = BinderUtil.GetRequireBinderInfoByValueType(retType);
+					
 					binderProperty.objectReferenceValue = EditorKit.DrawBinderField(
-						"Return Value", "dynamic", binderProperty.objectReferenceValue, null);
-				}
-				else
-				{
-					var binderInfo = BinderUtil.GetRequireBinderInfoByValueType(retType);
-					binderProperty.objectReferenceValue = EditorKit.DrawBinderField(
-						"Return Value", binderInfo.ValueTypeName, binderProperty.objectReferenceValue, binderInfo.InterfaceType);
+						"return " + i, requireBinderInfo.ValueTypeName, binderProperty.objectReferenceValue, requireBinderInfo.InterfaceType);
 				}
 			}
+
 			EditorGUI.indentLevel--;
 		}
 	}

@@ -75,42 +75,78 @@ namespace Haruna.UnityMVP.Presenter
 
 				if (index >= 0)
 				{
-					DrawParameters(_allEvents[index]);
+					var ev = Activator.CreateInstance(_allEvents[index].Field.FieldType) as PresenterEvent;
+					DrawConditions(ev.ConditionTypes);
+					DrawParameters(ev.ParameterTypes);
 				}
 			}
 			serializedObject.ApplyModifiedProperties();
 		}
 
-		void DrawParameters(PresenterEventInfo action)
+		void DrawConditions(Dictionary<string, Type> conditionTypes)
 		{
-			EditorGUILayout.LabelField("Parameters");
-			EditorGUI.indentLevel++;
+			if (conditionTypes == null)
+				conditionTypes = new Dictionary<string, Type>();
 
-			var parameters = action.Field.FieldType.GetGenericArguments();
-			if (parameters.Length == 0)
-			{
-				EditorGUILayout.HelpBox("No parameter data", MessageType.Error);
-				return;
-			}
-			else
-			{
-				var binderProperties = serializedObject.FindProperty("_eventParameterBinders");
+			var binderProperties = serializedObject.FindProperty("_registConditionBinders");
+			while (binderProperties.arraySize > conditionTypes.Count)
+				binderProperties.DeleteArrayElementAtIndex(conditionTypes.Count);
 
-				for (var i = 0; i < parameters.Length; i++)
+			if (conditionTypes.Count != 0)
+			{
+				EditorGUILayout.LabelField("Conditions");
+				EditorGUI.indentLevel++;
+
+				var keys = conditionTypes.Keys.ToArray();
+				for (var i = 0; i < keys.Length; i++)
 				{
 					if (binderProperties.arraySize <= i)
 						binderProperties.InsertArrayElementAtIndex(i);
 
 					var binderProperty = binderProperties.GetArrayElementAtIndex(i);
-					var parameterType = parameters[i];
+					var label = keys[i];
+					var parameterType = conditionTypes[label];
+
+					var requireBinderInfo = BinderUtil.GetRequireBinderInfoByValueType(parameterType);
+					binderProperty.objectReferenceValue = EditorKit.DrawBinderField(
+						label, requireBinderInfo.ValueTypeName, binderProperty.objectReferenceValue, requireBinderInfo.InterfaceType);
+				}
+
+				EditorGUI.indentLevel--;
+			}
+		}
+
+		void DrawParameters(Dictionary<string, Type> parameterTypes)
+		{
+			if (parameterTypes == null)
+				parameterTypes = new Dictionary<string, Type>();
+
+			EditorGUILayout.LabelField("Parameters");
+			EditorGUI.indentLevel++;
+			
+			var binderProperties = serializedObject.FindProperty("_eventParameterBinders");
+			while (binderProperties.arraySize > parameterTypes.Count)
+				binderProperties.DeleteArrayElementAtIndex(parameterTypes.Count);
+
+			if (parameterTypes.Count == 0)
+			{
+				EditorGUILayout.HelpBox("No parameter data", MessageType.Info);
+			}
+			else
+			{
+				var keys = parameterTypes.Keys.ToArray();
+				for (var i = 0; i < keys.Length; i++)
+				{
+					if (binderProperties.arraySize <= i)
+						binderProperties.InsertArrayElementAtIndex(i);
+
+					var binderProperty = binderProperties.GetArrayElementAtIndex(i);
+					var label = keys[i];
+					var parameterType = parameterTypes[label];
 					
 					var requireBinderInfo = BinderUtil.GetRequireBinderInfoByValueType(parameterType);
 					binderProperty.objectReferenceValue = EditorKit.DrawBinderField(
-						i.ToString(), requireBinderInfo.ValueTypeName, binderProperty.objectReferenceValue, requireBinderInfo.InterfaceType);
-				}
-				for (var i = parameters.Length; i < binderProperties.arraySize; i++)
-				{
-					binderProperties.DeleteArrayElementAtIndex(parameters.Length);
+						label, requireBinderInfo.ValueTypeName, binderProperty.objectReferenceValue, requireBinderInfo.InterfaceType);
 				}
 			}
 			EditorGUI.indentLevel--;

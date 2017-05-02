@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 
 namespace Haruna.UnityMVP.Model
-{	
+{
 	public class RequireBinderInfo
 	{
 		public MTokenType TokenType;
@@ -54,7 +54,7 @@ namespace Haruna.UnityMVP.Model
 				var temp = new ModelPropertyInfo();
 				temp.MemberInfo = memberInfo;
 				temp.BinderInfo = GetRequireBinderInfoByValueType(TypeUtil.GetFieldOrPropertyType(memberInfo));
-				
+
 				ret.Add(memberInfo.Name, temp);
 			}
 			return ret;
@@ -64,7 +64,7 @@ namespace Haruna.UnityMVP.Model
 		{
 			var temp = new RequireBinderInfo();
 			temp.ValueType = valueType;
-			if(temp.ValueType == typeof(MToken) || temp.ValueType.IsSubclassOf(typeof(MToken)))
+			if (temp.ValueType == typeof(MToken) || temp.ValueType.IsSubclassOf(typeof(MToken)))
 			{
 				temp.TokenType = MTokenType.Dynamic;
 				temp.ValueTypeName = "dynamic";
@@ -83,6 +83,12 @@ namespace Haruna.UnityMVP.Model
 					temp.TokenType = MTokenType.Float;
 					temp.ValueTypeName = "float";
 				}
+			}
+			else if (temp.ValueType.IsEnum)
+			{
+				temp.InterfaceType = typeof(IMvpFloatBinder);
+				temp.TokenType = MTokenType.Float;
+				temp.ValueTypeName = "enum";
 			}
 			else if (temp.ValueType == typeof(string))
 			{

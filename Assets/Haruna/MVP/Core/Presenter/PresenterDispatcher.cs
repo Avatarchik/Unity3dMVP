@@ -233,7 +233,7 @@ namespace Haruna.UnityMVP.Presenter
 			}
 		}
 
-		public void RegistPresenterEvent(string url, IOnPresenterBroadcast linker)
+		public void RegistPresenterEvent(string url, IOnPresenterBroadcast eventLinker)
 		{
 			List<Component> list;
 			if(!_registedEvents.TryGetValue(url, out list))
@@ -241,13 +241,35 @@ namespace Haruna.UnityMVP.Presenter
 				list = new List<Component>();
 				_registedEvents.Add(url, list);
 			}
-			list.Add((Component)linker);
+			list.Add((Component)eventLinker);
 		}
 
-		public void BroadcastEvent(string url, object[] data, bool needReceiver = false)
+		public static void UnregistPresenterEvent(string url, IOnPresenterBroadcast eventLinker)
+		{
+			if (_instance == null)
+				return;
+
+			List<Component> list;
+			if (_instance._registedEvents.TryGetValue(url, out list))
+			{
+				list.Remove((Component)eventLinker);
+			}
+		}
+
+		public void BroadcastEvent(string url, object[] data, Func<IOnPresenterBroadcast, bool> validater, bool needReceiver = false)
 		{
 			List<Component> list;
 			if (!_registedEvents.TryGetValue(url, out list))
+			{
+				if (needReceiver)
+					throw new Exception("can not find registed event " + url);
+				else
+					return;
+			}
+			list.RemoveAll(linker => linker == null);
+
+			var toBroadCastEvent = validater == null ? list : list.Where(e => validater((IOnPresenterBroadcast)e)).ToList();
+			if (toBroadCastEvent.Count() == 0)
 			{
 				if (needReceiver)
 					throw new Exception("can not find registed event " + url);
@@ -262,11 +284,10 @@ namespace Haruna.UnityMVP.Presenter
 				toSendArgs.Add(arg);
 			}
 
-			list.RemoveAll(l => l == null);
-			for (var i = 0; i < list.Count; i++)
+			for (var i = 0; i < toBroadCastEvent.Count; i++)
 			{
-				var target = list[i];
-				((IOnPresenterBroadcast)target).OnEvent(toSendArgs.ToArray());
+				var target = toBroadCastEvent[i] as IOnPresenterBroadcast;
+				target.OnEvent(toSendArgs.ToArray());
 			}
 		}
 	}

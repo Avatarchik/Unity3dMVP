@@ -1,6 +1,7 @@
 ﻿using Haruna.UnityMVP.Model;
 using Haruna.UnityMVP.Presenter;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Haruna.UnityMVP.Examples
@@ -14,6 +15,8 @@ namespace Haruna.UnityMVP.Examples
 		public string NickName { set; get; }
 		[ModelProperty]
 		public Sprite Portrait { set; get; } 
+		[ModelProperty]
+		public List<float> Numbers { set; get; }
 	}
 
 	[Presenter]
@@ -26,7 +29,7 @@ namespace Haruna.UnityMVP.Examples
 			info.UserId = "uid : " + uid;
 			info.NickName = "John Smith";
 			info.Portrait = Resources.Load<Sprite>("UnityMVP_Example_Portrait");
-			
+			info.Numbers = new List<float>() { 23, 44, 5, 6 };
 			return info;
 		}
 
@@ -37,6 +40,7 @@ namespace Haruna.UnityMVP.Examples
 			info.UserId = "uid : " + uid;
 			info.NickName = "John Smith";
 			info.Portrait = Resources.Load<Sprite>("UnityMVP_Example_Portrait");
+			info.Numbers = new List<float>() { 23, 44, 5, 6 };
 
 			System.Threading.Thread thread = new System.Threading.Thread(new System.Threading.ThreadStart(() =>
 			{

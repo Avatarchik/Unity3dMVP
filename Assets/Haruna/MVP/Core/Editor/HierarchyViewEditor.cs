@@ -55,6 +55,16 @@ namespace Haruna.UnityMVP.Presenter
 				}
 			}
 			{
+				var binder = obj.GetComponent<Model.IMvpTokenBinder>();
+				if (binder != null)
+				{
+					if (binder.HasEditorError())
+						toDrawList.Add(GetObjectBinderIcon(true));
+					else if (EditorPrefs.GetBool(PreferenceEditor.ShowObjectBinderIconInHierarchy, true))
+						toDrawList.Add(GetObjectBinderIcon(false));
+				}
+			}
+			{
 				var binder = obj.GetComponent<Model.IMvpObjectBinder>();
 				if (binder != null)
 				{
@@ -109,6 +119,8 @@ namespace Haruna.UnityMVP.Presenter
 				var binders = obj.GetComponents<Component>();
 				if (binders.Any(b =>
 				{
+					if (b == null) return false;
+
 					if (b.GetType().GetInterface(typeof(Model.IMvpCustomTypeBinder<>).FullName) == null)
 						return false;
 					var method = b.GetType().GetMethod("HasEditorError");
@@ -128,44 +140,51 @@ namespace Haruna.UnityMVP.Presenter
 		static bool IsChildrenHasError(GameObject go)
 		{
 			{
-				var linkers = go.GetComponentsInChildren<PresenterActionLinker>();
+				var linkers = go.GetComponentsInChildren<PresenterActionLinker>(true);
 				if (linkers.Any(l => l.gameObject != go && l.HasEditorError()))
 					return true;
 			}
 			{
-				var linkers = go.GetComponentsInChildren<PresenterEventLinker>();
+				var linkers = go.GetComponentsInChildren<PresenterEventLinker>(true);
 				if (linkers.Any(l => l.gameObject != go && l.HasEditorError()))
 					return true;
 			}
 			{
-				var binders = go.GetComponentsInChildren<Model.IMvpObjectBinder>();
+				var binders = go.GetComponentsInChildren<Model.IMvpTokenBinder>(true);
 				if (binders.Any(b => ((Component)b).gameObject != go && b.HasEditorError()))
 					return true;
 			}
 			{
-				var binders = go.GetComponentsInChildren<Model.IMvpArrayBinder>();
+				var binders = go.GetComponentsInChildren<Model.IMvpObjectBinder>(true);
 				if (binders.Any(b => ((Component)b).gameObject != go && b.HasEditorError()))
 					return true;
 			}
 			{
-				var binders = go.GetComponentsInChildren<Model.IMvpBoolBinder>();
+				var binders = go.GetComponentsInChildren<Model.IMvpArrayBinder>(true);
 				if (binders.Any(b => ((Component)b).gameObject != go && b.HasEditorError()))
 					return true;
 			}
 			{
-				var binders = go.GetComponentsInChildren<Model.IMvpFloatBinder>();
+				var binders = go.GetComponentsInChildren<Model.IMvpBoolBinder>(true);
 				if (binders.Any(b => ((Component)b).gameObject != go && b.HasEditorError()))
 					return true;
 			}
 			{
-				var binders = go.GetComponentsInChildren<Model.IMvpStringBinder>();
+				var binders = go.GetComponentsInChildren<Model.IMvpFloatBinder>(true);
 				if (binders.Any(b => ((Component)b).gameObject != go && b.HasEditorError()))
 					return true;
 			}
 			{
-				var binders = go.GetComponents<Component>();
+				var binders = go.GetComponentsInChildren<Model.IMvpStringBinder>(true);
+				if (binders.Any(b => ((Component)b).gameObject != go && b.HasEditorError()))
+					return true;
+			}
+			{
+				var binders = go.GetComponentsInChildren<Component>(true);
 				if (binders.Any(b =>
 				{
+					if (b == null) return true;
+
 					if (b.GetType().GetInterface(typeof(Model.IMvpCustomTypeBinder<>).FullName) == null)
 						return false;
 					var method = b.GetType().GetMethod("HasEditorError");

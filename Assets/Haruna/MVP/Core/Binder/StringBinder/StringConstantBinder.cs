@@ -18,13 +18,10 @@ namespace Haruna.UnityMVP.Model
 
 		public void SetData(MString data)
 		{
-			if (_receiveSetData)
-			{
-				if (data == null)
-					_content = "";
-				else
-					_content = data;
-			}
+			if (data == null)
+				_content = "";
+			else
+				_content = data;
 			//do nothing;
 		}
 		public bool HasEditorError()

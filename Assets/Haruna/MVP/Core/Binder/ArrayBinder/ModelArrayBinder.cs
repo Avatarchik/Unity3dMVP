@@ -1,39 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Haruna.UnityMVP.Model
 {
-	public enum ArrayElementTypeEnum
-	{
-		String,
-		Float,
-		Bool,
-		Object,
-		Custom
-	}
-	[AddComponentMenu("UnityMVP/Binder/ArrayBinder")]
+	[AddComponentMenu("UnityMVP/Binder/ModelArrayBinder")]
 	public class ModelArrayBinder : MonoBehaviour, IMvpArrayBinder
 	{
 		[SerializeField]
-		ArrayElementTypeEnum _arrayElementType;
-		[SerializeField]
-		string _customElementTypeString;
-		[SerializeField]
-		Component _arrayElementTemplate;
+		ArrayElementBinder _arrayElementTemplate;
 
-		List<Component> _elements = new List<Component>();
+		List<ArrayElementBinder> _elements = new List<ArrayElementBinder>();
 		
 		public void SetData(MArray data)
 		{
+			if (data == null)
+				return;
+
 			for(int i = 0; i < data.Count; i++)
 			{
-				Component element;
+				ArrayElementBinder element;
 				if (_elements.Count > i)
 					element = _elements[i];
 				else
 				{
 					element = Instantiate(_arrayElementTemplate);
+					element.name = _arrayElementTemplate.name;
+					element.gameObject.SetActive(true);
 					element.transform.SetParent(transform, false);
 					element.transform.localPosition = Vector3.zero;
 					element.transform.localScale = Vector3.one;
@@ -42,7 +36,7 @@ namespace Haruna.UnityMVP.Model
 				}
 
 				var value = data[i];
-				BinderUtil.SetValueToBinder(value, element);
+				element.SetData(value);
 			}
 			for(int i = _elements.Count - 1; i >= data.Count; i++)
 			{
@@ -56,7 +50,7 @@ namespace Haruna.UnityMVP.Model
 			MArray ret = new MArray();
 			_elements.ForEach(e =>
 			{
-				ret.Add(BinderUtil.GetValueFromBinder(e));
+				ret.Add(e.GetData());
 			});
 
 			return ret;
@@ -66,10 +60,7 @@ namespace Haruna.UnityMVP.Model
 		{
 			if (_arrayElementTemplate == null)
 				return true;
-
-			if (_arrayElementType == ArrayElementTypeEnum.Custom)
-				return TypeUtil.GetTypeWithAssemblyTypeString(_customElementTypeString) == null;
-
+			
 			return false;
 		}
 	}

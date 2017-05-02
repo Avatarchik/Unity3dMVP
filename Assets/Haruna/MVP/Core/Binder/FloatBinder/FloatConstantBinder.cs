@@ -15,7 +15,10 @@ namespace Haruna.UnityMVP.Model
 
 		public void SetData(MFloat data)
 		{
-			_value = data.Value;
+			if (data == null)
+				_value = 0;
+			else
+				_value = data;
 		}
 
 		public bool HasEditorError()
